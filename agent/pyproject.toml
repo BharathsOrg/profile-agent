@@ -1,7 +1,7 @@
 [project]
-name = "familyman-agent"
+name = "profile-agent"
 version = "0.1.0"
-description = "FamilyMan Agent with shared state"
+description = "Profile Agent with shared state"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi",

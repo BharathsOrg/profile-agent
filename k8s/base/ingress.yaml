@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: familyman-ui-ingress
+  name: profile-agent-ingress
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
     # Increase timeout for agent streaming responses
@@ -20,6 +20,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: familyman-ui-service
+            name: profile-agent-service
             port:
               number: 80

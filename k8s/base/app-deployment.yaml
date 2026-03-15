@@ -2,20 +2,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: familyman-ui
+  name: profile-agent
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: familyman-ui
+      app: profile-agent
   template:
     metadata:
       labels:
-        app: familyman-ui
+        app: profile-agent
     spec:
       containers:
-      - name: familyman-ui
-        image: krishbharath/familyman-ui:latest
+      - name: profile-agent
+        image: krishbharath/profile-agent:latest
         imagePullPolicy: Always # Always pull from Docker Hub
         ports:
         - containerPort: 3000
@@ -26,9 +26,9 @@ spec:
           protocol: TCP
         envFrom:
         - configMapRef:
-            name: familyman-ui-config
+            name: profile-agent-config
         - secretRef:
-            name: familyman-ui-secrets
+            name: profile-agent-secrets
         volumeMounts:
         - name: conversation-notes
           mountPath: /conversation_notes

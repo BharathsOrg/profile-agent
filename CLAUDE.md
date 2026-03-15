@@ -4,9 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a CopilotKit + Google ADK (Agent Development Kit) integration project that implements "FamilyMan" - an AI-powered personal assistant for Bharath Krishna. The assistant helps recruiters and hiring managers learn about Bharath's 15 years of professional experience, skills, and background. It combines a Next.js frontend with a Python FastAPI backend agent powered by Google's Gemini model.
+This is a CopilotKit + Google ADK (Agent Development Kit) integration project that implements a Profile Agent - an AI-powered personal assistant for Bharath Krishna. The assistant helps recruiters and hiring managers learn about Bharath's 15 years of professional experience, skills, and background. It combines a Next.js frontend with a Python FastAPI backend agent powered by Google's Gemini model.
 
-**Source of Truth:** `/home/bharath/workspace/familyman-ui/Bharath_CV_2025.pdf` is the definitive source for all profile data (experience, skills, education).
+**Source of Truth:** `/home/bharath/workspace/profile_agent/Bharath_CV_2025.pdf` is the definitive source for all profile data (experience, skills, education).
 
 ## Architecture
 
@@ -15,7 +15,7 @@ This is a CopilotKit + Google ADK (Agent Development Kit) integration project th
 1. **Frontend Layer** ([src/app/page.tsx](src/app/page.tsx))
    - Next.js 16 with React 19
    - Interactive profile page with collapsible sections, skills filtering, and contact cards
-   - CopilotKit sidebar interface for conversational interactions with FamilyMan agent
+   - CopilotKit sidebar interface for conversational interactions with Profile Agent
    - Shared state management via `useCoAgent` hook syncs conversation context with backend
    - Generative UI components rendered from backend tool calls via `useRenderToolCall`
    - Five frontend tools exposed to agent via `useFrontendTool` for UI control:
@@ -36,7 +36,7 @@ This is a CopilotKit + Google ADK (Agent Development Kit) integration project th
    - Agent is registered as `"BharathAssistant"` in the runtime (must match `useCoAgent` hook name)
 
 3. **Agent Layer** ([agent/main.py](agent/main.py))
-   - Google ADK `LlmAgent` named "FamilyManAgent" with Gemini 2.5 Flash model
+   - Google ADK `LlmAgent` named "BharathAssistant" with Gemini 2.5 Flash model
    - FastAPI server on port 8001
    - Uses callbacks to inject Bharath's professional profile and manage state:
      - `on_before_agent`: Initialize empty conversation context
@@ -47,7 +47,7 @@ This is a CopilotKit + Google ADK (Agent Development Kit) integration project th
      - `get_weather`: Demonstrate generative UI rendering (example tool)
      - `get_person_card`: Future family tree features (reserved for future use)
    - Profile data architecture: Static profile in system prompt, dynamic conversation notes in state
-   - Connects to remote familyman agent on port 8003 via `RemoteA2aAgent` (currently disabled)
+   - Connects to remote profile agent on port 8003 via `RemoteA2aAgent` (currently disabled)
 
 ### Key Patterns
 
@@ -74,7 +74,7 @@ This is a CopilotKit + Google ADK (Agent Development Kit) integration project th
 
 **Frontend Actions Pattern:**
 - Frontend exposes UI control capabilities to agent via `useFrontendTool`
-- FamilyMan agent can control the profile page interface through five tools:
+- Profile Agent can control the profile page interface through five tools:
   - `updateProfessionalSummary`: Update the professional summary section with new text
   - `setThemeColor`: Change the theme color (hex color code)
   - `highlightSection`: Scroll to and temporarily highlight a section (contact, summary, strengths, education, experience, skills, certifications, personal)
@@ -207,10 +207,10 @@ pip install -r requirements.txt
 - Fix: Use `createSystem(defaultConfig, { preflight: false })` instead of `defaultSystem` in [src/components/ui/provider.tsx](src/components/ui/provider.tsx)
 - This disables ChakraUI's global CSS reset while keeping all component styles (Cards, Buttons, etc.) fully functional
 
-## FamilyMan Agent Implementation
+## Profile Agent Implementation
 
 ### Agent Purpose
-FamilyMan is Bharath Krishna's personal AI assistant designed to:
+The Profile Agent is Bharath Krishna's personal AI assistant designed to:
 - Answer questions about Bharath's 15 years of professional experience (2010-2025)
 - Advocate on his behalf to recruiters and hiring managers
 - Provide specific details about skills, projects, and achievements
@@ -252,7 +252,7 @@ The agent can manipulate the profile page UI through frontend tools:
 - Change theme color for visual customization
 
 ### Testing the Agent
-Sample queries to test FamilyMan:
+Sample queries to test Profile Agent:
 - "How many years of experience does Bharath have?"
 - "What is Bharath's current role?"
 - "Does Bharath have Kubernetes experience?"

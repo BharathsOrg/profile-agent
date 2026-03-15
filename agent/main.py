@@ -424,9 +424,9 @@ def simple_after_model_modifier(
 # from google.adk.agents.remote_a2a_agent import RemoteA2aAgent
 # from google.adk.agents.remote_a2a_agent import AGENT_CARD_WELL_KNOWN_PATH
 
-# familyman_agent = RemoteA2aAgent(
-#     name="familyman",
-#     description="Familyman AI agent for managing family tasks and other activities. Has many sub agents and tools for different tasks.",
+# profile_agent = RemoteA2aAgent(
+#     name="profile_agent",
+#     description="Profile Agent AI assistant for answering questions about Bharath's professional background.",
 #     agent_card=(
 #         f"http://localhost:8003/{AGENT_CARD_WELL_KNOWN_PATH}"
 #     ),
@@ -460,7 +460,7 @@ from google.adk.planners import BuiltInPlanner
 
 
 
-familyman_agent = Agent(
+profile_agent = Agent(
     name="BharathAssistant",
     # model="gemini-2.5-flash",
     model=model,
@@ -500,7 +500,7 @@ Keep your responses short and professional, likve a conversation. With in three 
     before_agent_callback=on_before_agent,
     before_model_callback=before_model_modifier,
     after_model_callback=simple_after_model_modifier,
-    # sub_agents=[familyman_agent],
+    # sub_agents=[profile_agent],
     planner=BuiltInPlanner(
         thinking_config=types.ThinkingConfig(
             include_thoughts=False,  # capture intermediate reasoning
@@ -510,15 +510,15 @@ Keep your responses short and professional, likve a conversation. With in three 
 )
 
 # Create ADK middleware agent instance
-adk_familyman_agent = ADKAgent(
-    adk_agent=familyman_agent,
+adk_profile_agent = ADKAgent(
+    adk_agent=profile_agent,
     user_id="demo_user",
     session_timeout_seconds=3600,
     use_in_memory_services=True,
 )
 
 # Create FastAPI app
-app = FastAPI(title="FamilyMan Agent API")
+app = FastAPI(title="Profile Agent API")
 
 
 # --- Exception Handlers ---
@@ -598,7 +598,7 @@ async def health_check():
 
 
 # Add the ADK endpoint
-add_adk_fastapi_endpoint(app, adk_familyman_agent, path="/")
+add_adk_fastapi_endpoint(app, adk_profile_agent, path="/")
 
 
 # Initialize Langfuse
@@ -633,8 +633,8 @@ opik_tracer = OpikTracer(
     },
     project_name="PrfileAgentTracing"
 )
-# Instrument the agent with a single function call - this is the recommended approach   
-track_adk_agent_recursive(familyman_agent, opik_tracer)
+# Instrument the agent with a single function call - this is the recommended approach
+track_adk_agent_recursive(profile_agent, opik_tracer)
 
 
 if __name__ == "__main__":

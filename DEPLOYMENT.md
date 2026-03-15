@@ -1,8 +1,8 @@
-# FamilyMan UI - Kubernetes Deployment Documentation
+# Profile Agent - Kubernetes Deployment Documentation
 
 ## Overview
 
-This document covers the complete containerization and Kubernetes deployment process for the FamilyMan UI application (Next.js + FastAPI agent).
+This document covers the complete containerization and Kubernetes deployment process for the Profile Agent application (Next.js + FastAPI agent).
 
 ## Docker Containerization
 
@@ -75,11 +75,11 @@ style={{ '--tw-ring-color': themeColor } as React.CSSProperties}
 ### Architecture
 
 **Resources Created:**
-- ConfigMap: `familyman-ui-config` (environment variables: PORT=3000, PYTHON_PORT=8001)
-- Secret: `familyman-ui-secrets` (API keys: GOOGLE_API_KEY, LANGFUSE_*)
-- Deployment: `familyman-ui` (1 replica, image from Docker Hub)
-- Service: `familyman-ui-service` (ClusterIP, ports 80 & 8001)
-- Ingress: `familyman-ui-ingress` (HAProxy class, host: profile.krishb.in)
+- ConfigMap: `profile-agent-config` (environment variables: PORT=3000, PYTHON_PORT=8001)
+- Secret: `profile-agent-secrets` (API keys: GOOGLE_API_KEY, LANGFUSE_*)
+- Deployment: `profile-agent` (1 replica, image from Docker Hub)
+- Service: `profile-agent-service` (ClusterIP, ports 80 & 8001)
+- Ingress: `profile-agent-ingress` (HAProxy class, host: profile.krishb.in)
 
 **External Infrastructure:**
 - HAProxy: Host-level SSL termination with Let's Encrypt certificate
@@ -117,7 +117,7 @@ echo -n 'pk-lf-6c1f0219-8f80-4b1f-a23f-e9a4f72c7670' | base64
 echo -n 'https://langfuse.krishb.in' | base64
 
 # Update secret.yaml with encoded values
-kubectl delete secret familyman-ui-secrets
+kubectl delete secret profile-agent-secrets
 kubectl apply -f k8s/base/secret.yaml
 ```
 
@@ -129,11 +129,11 @@ kubectl apply -f k8s/base/secret.yaml
 **Solution:**
 ```bash
 # Tag and push to Docker Hub
-docker tag familyman-ui:latest krishbharath/familyman-ui:latest
-docker push krishbharath/familyman-ui:latest
+docker tag profile-agent:latest krishbharath/profile-agent:latest
+docker push krishbharath/profile-agent:latest
 
 # Update deployment
-kubectl set image deployment/familyman-ui familyman-ui=krishbharath/familyman-ui:latest
+kubectl set image deployment/profile-agent profile-agent=krishbharath/profile-agent:latest
 ```
 
 #### 3. Port Configuration Issue (RESOLVED)
@@ -149,19 +149,19 @@ port = int(os.getenv("PYTHON_PORT", os.getenv("PORT", 8001)))
 
 2. Rebuilt Docker image with `--no-cache` flag to force fresh build:
 ```bash
-docker build --no-cache -t krishbharath/familyman-ui:latest .
-docker push krishbharath/familyman-ui:latest
+docker build --no-cache -t krishbharath/profile-agent:latest .
+docker push krishbharath/profile-agent:latest
 ```
 
 3. Updated deployment manifest to use Docker Hub image with `imagePullPolicy: Always`:
 ```yaml
-image: krishbharath/familyman-ui:latest
+image: krishbharath/profile-agent:latest
 imagePullPolicy: Always  # Always pull from Docker Hub
 ```
 
 4. Restarted deployment:
 ```bash
-kubectl rollout restart deployment/familyman-ui
+kubectl rollout restart deployment/profile-agent
 ```
 
 **Verification:**
@@ -193,9 +193,9 @@ HAProxy on host (port 443, SSL termination)
   ↓
 HAProxy Ingress Controller (NodePort 30080)
   ↓
-familyman-ui-service (ClusterIP port 80 → targetPort 3000)
+profile-agent-service (ClusterIP port 80 → targetPort 3000)
   ↓
-familyman-ui pod (Next.js:3000, FastAPI:8001)
+profile-agent pod (Next.js:3000, FastAPI:8001)
 ```
 
 ## HAProxy Integration
@@ -285,35 +285,35 @@ LANGFUSE_BASE_URL: "<base64-encoded>"
 
 ### Check Status
 ```bash
-kubectl get pods -l app=familyman-ui
-kubectl get svc familyman-ui-service
-kubectl get ingress familyman-ui-ingress
+kubectl get pods -l app=profile-agent
+kubectl get svc profile-agent-service
+kubectl get ingress profile-agent-ingress
 ```
 
 ### View Logs
 ```bash
-kubectl logs -l app=familyman-ui -f
-kubectl logs -l app=familyman-ui --all-containers=true
+kubectl logs -l app=profile-agent -f
+kubectl logs -l app=profile-agent --all-containers=true
 ```
 
 ### Debug Pod
 ```bash
-kubectl describe pod -l app=familyman-ui
+kubectl describe pod -l app=profile-agent
 kubectl exec -it <pod-name> -- /bin/bash
 ```
 
 ### Restart Deployment
 ```bash
-kubectl rollout restart deployment/familyman-ui
-kubectl rollout status deployment/familyman-ui
+kubectl rollout restart deployment/profile-agent
+kubectl rollout status deployment/profile-agent
 ```
 
 ### Update Image
 ```bash
 # After building and pushing new image
-docker build -t krishbharath/familyman-ui:latest .
-docker push krishbharath/familyman-ui:latest
-kubectl rollout restart deployment/familyman-ui
+docker build -t krishbharath/profile-agent:latest .
+docker push krishbharath/profile-agent:latest
+kubectl rollout restart deployment/profile-agent
 ```
 
 ## Current Status
@@ -330,8 +330,8 @@ kubectl rollout restart deployment/familyman-ui
 **Infrastructure:**
 - SSL: Terminated at HAProxy host level (Let's Encrypt)
 - Ingress: HAProxy Ingress Controller (NodePort 30080)
-- Service: ClusterIP (familyman-ui-service)
-- Image: krishbharath/familyman-ui:latest (Docker Hub)
+- Service: ClusterIP (profile-agent-service)
+- Image: krishbharath/profile-agent:latest (Docker Hub)
 
 **Known Minor Issues:**
 - Health checks commented out (return HTTP 405 on FastAPI root endpoint)
@@ -350,45 +350,45 @@ kubectl rollout restart deployment/familyman-ui
 ## Files Modified
 
 ### Code Changes
-- `/home/bharath/workspace/familyman-ui/Dockerfile` - Created
-- `/home/bharath/workspace/familyman-ui/scripts/docker-entrypoint.sh` - Created
-- `/home/bharath/workspace/familyman-ui/.dockerignore` - Created
-- `/home/bharath/workspace/familyman-ui/.gitignore` - Updated (uncommented lock files)
-- `/home/bharath/workspace/familyman-ui/agent/main.py` - Modified port configuration
-- `/home/bharath/workspace/familyman-ui/src/app/api/copilotkit/route.ts` - Fixed type error
-- `/home/bharath/workspace/familyman-ui/src/app/page.tsx` - Fixed type error
-- `/home/bharath/workspace/familyman-ui/src/lib/types.ts` - Added proverbs property
-- `/home/bharath/workspace/familyman-ui/src/components/experience-timeline.tsx` - Fixed CSS property
-- `/home/bharath/workspace/familyman-ui/src/components/section-header.tsx` - Fixed CSS property
-- `/home/bharath/workspace/familyman-ui/src/components/skills-filter.tsx` - Fixed CSS property
+- `/home/bharath/workspace/profile-agent/Dockerfile` - Created
+- `/home/bharath/workspace/profile-agent/scripts/docker-entrypoint.sh` - Created
+- `/home/bharath/workspace/profile-agent/.dockerignore` - Created
+- `/home/bharath/workspace/profile-agent/.gitignore` - Updated (uncommented lock files)
+- `/home/bharath/workspace/profile-agent/agent/main.py` - Modified port configuration
+- `/home/bharath/workspace/profile-agent/src/app/api/copilotkit/route.ts` - Fixed type error
+- `/home/bharath/workspace/profile-agent/src/app/page.tsx` - Fixed type error
+- `/home/bharath/workspace/profile-agent/src/lib/types.ts` - Added proverbs property
+- `/home/bharath/workspace/profile-agent/src/components/experience-timeline.tsx` - Fixed CSS property
+- `/home/bharath/workspace/profile-agent/src/components/section-header.tsx` - Fixed CSS property
+- `/home/bharath/workspace/profile-agent/src/components/skills-filter.tsx` - Fixed CSS property
 
 ### Kubernetes Manifests
-- `/home/bharath/workspace/familyman-ui/k8s/base/` - All manifests created
-- `/home/bharath/workspace/familyman-ui/k8s/overlays/local/` - Overlay created
-- `/home/bharath/workspace/familyman-ui/k8s/README.md` - Created
+- `/home/bharath/workspace/profile-agent/k8s/base/` - All manifests created
+- `/home/bharath/workspace/profile-agent/k8s/overlays/local/` - Overlay created
+- `/home/bharath/workspace/profile-agent/k8s/README.md` - Created
 
 ### Deployment Scripts
-- `/home/bharath/workspace/familyman-ui/scripts/build-docker.sh` - Created
-- `/home/bharath/workspace/familyman-ui/scripts/deploy-k8s.sh` - Created
+- `/home/bharath/workspace/profile-agent/scripts/build-docker.sh` - Created
+- `/home/bharath/workspace/profile-agent/scripts/deploy-k8s.sh` - Created
 
 ## Docker Hub Repository
 
-**Image:** `krishbharath/familyman-ui:latest`
+**Image:** `krishbharath/profile-agent:latest`
 
-**Repository:** https://hub.docker.com/r/krishbharath/familyman-ui
+**Repository:** https://hub.docker.com/r/krishbharath/profile-agent
 
 ## Verification and Testing
 
 1. **Check deployment status:**
    ```bash
-   kubectl get pods -l app=familyman-ui
-   kubectl get svc familyman-ui-service
-   kubectl get ingress familyman-ui-ingress
+   kubectl get pods -l app=profile-agent
+   kubectl get svc profile-agent-service
+   kubectl get ingress profile-agent-ingress
    ```
 
 2. **View logs:**
    ```bash
-   kubectl logs -l app=familyman-ui -f --all-containers=true
+   kubectl logs -l app=profile-agent -f --all-containers=true
    ```
 
 3. **Verify port bindings in container:**

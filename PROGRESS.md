@@ -1,7 +1,7 @@
-# Progress Report - Familyman UI Profile Update
+# Progress Report - Profile Agent Update
 
 ## Session Summary
-- **Project:** Familyman UI (Next.js + Python ADK Agent)
+- **Project:** Profile Agent (Next.js + Python ADK Agent)
 - **Goal:** Update Bharath's professional profile and agent knowledge base.
 
 ## Completed Tasks

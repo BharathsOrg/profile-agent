@@ -1,6 +1,6 @@
-# Kubernetes Deployment for FamilyMan UI
+# Kubernetes Deployment for Profile Agent
 
-This directory contains Kubernetes manifests for deploying the FamilyMan UI application (Next.js + FastAPI agent) to a Kubernetes cluster.
+This directory contains Kubernetes manifests for deploying the Profile Agent application (Next.js + FastAPI agent) to a Kubernetes cluster.
 
 ## Prerequisites
 
@@ -17,11 +17,11 @@ This directory contains Kubernetes manifests for deploying the FamilyMan UI appl
 
 ```bash
 # From the project root
-docker build -t familyman-ui:latest .
+docker build -t profile-agent:latest .
 
 # If using a remote registry, tag and push
-docker tag familyman-ui:latest <your-registry>/familyman-ui:latest
-docker push <your-registry>/familyman-ui:latest
+docker tag profile-agent:latest <your-registry>/profile-agent:latest
+docker push <your-registry>/profile-agent:latest
 ```
 
 ### 2. Create Secrets
@@ -56,19 +56,19 @@ kubectl apply -k k8s/base
 
 ```bash
 # Check pods
-kubectl get pods -l app=familyman-ui
+kubectl get pods -l app=profile-agent
 
 # Check services
-kubectl get svc familyman-ui-service
+kubectl get svc profile-agent-service
 
 # Check ingress
-kubectl get ingress familyman-ui-ingress
+kubectl get ingress profile-agent-ingress
 
 # View logs
-kubectl logs -l app=familyman-ui -f
+kubectl logs -l app=profile-agent -f
 
 # Check both container ports
-kubectl logs -l app=familyman-ui -c familyman-ui
+kubectl logs -l app=profile-agent -c profile-agent
 ```
 
 ### 5. Access the Application
@@ -138,7 +138,7 @@ spec:
 EOF
 ```
 
-3. The certificate will be automatically created and stored in the `familyman-ui-tls` secret.
+3. The certificate will be automatically created and stored in the `profile-agent-tls` secret.
 
 ### Using a Different Domain
 
@@ -148,7 +148,7 @@ spec:
   tls:
   - hosts:
     - your-domain.com  # Change this
-    secretName: familyman-ui-tls
+    secretName: profile-agent-tls
   rules:
   - host: your-domain.com  # Change this
 ```
@@ -158,25 +158,25 @@ spec:
 ### Pod not starting
 ```bash
 # Check pod events
-kubectl describe pod -l app=familyman-ui
+kubectl describe pod -l app=profile-agent
 
 # Check logs
-kubectl logs -l app=familyman-ui --all-containers=true
+kubectl logs -l app=profile-agent --all-containers=true
 ```
 
 ### Agent not connecting
 ```bash
 # Check if both ports are exposed
-kubectl get svc familyman-ui-service
+kubectl get svc profile-agent-service
 
 # Port-forward to test locally
-kubectl port-forward svc/familyman-ui-service 3000:80 8001:8001
+kubectl port-forward svc/profile-agent-service 3000:80 8001:8001
 ```
 
 ### Ingress not working
 ```bash
 # Check ingress status
-kubectl describe ingress familyman-ui-ingress
+kubectl describe ingress profile-agent-ingress
 
 # Check ingress controller logs
 kubectl logs -n ingress-nginx -l app.kubernetes.io/component=controller
@@ -195,20 +195,20 @@ kubectl logs -n cert-manager -l app=cert-manager
 
 ```bash
 # Rebuild image
-docker build -t familyman-ui:latest .
+docker build -t profile-agent:latest .
 
 # If using local image in k8s, load it to your cluster
 # For minikube:
-minikube image load familyman-ui:latest
+minikube image load profile-agent:latest
 
 # For kind:
-kind load docker-image familyman-ui:latest
+kind load docker-image profile-agent:latest
 
 # Restart pods to pick up new image
-kubectl rollout restart deployment/familyman-ui
+kubectl rollout restart deployment/profile-agent
 
 # Watch rollout status
-kubectl rollout status deployment/familyman-ui
+kubectl rollout status deployment/profile-agent
 ```
 
 ## Cleanup
@@ -221,7 +221,7 @@ kubectl delete -k k8s/overlays/local
 kubectl delete -k k8s/base
 
 # Don't forget to delete your secret if it was applied separately
-kubectl delete secret familyman-ui-secrets
+kubectl delete secret profile-agent-secrets
 ```
 
 ## Architecture

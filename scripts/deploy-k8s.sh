@@ -1,5 +1,5 @@
 #!/bin/bash
-# Deployment script for FamilyMan UI to Kubernetes
+# Deployment script for Profile Agent to Kubernetes
 
 set -e
 
@@ -19,7 +19,7 @@ cd "$PROJECT_ROOT"
 # Default overlay
 OVERLAY="${1:-local}"
 
-echo -e "${BLUE}Deploying FamilyMan UI to Kubernetes (overlay: $OVERLAY)...${NC}"
+echo -e "${BLUE}Deploying Profile Agent to Kubernetes (overlay: $OVERLAY)...${NC}"
 
 # Check if kubectl is available
 if ! command -v kubectl &> /dev/null; then
@@ -59,18 +59,18 @@ echo -e "${GREEN}✓ Deployment applied${NC}"
 
 # Wait for deployment to be ready
 echo -e "${BLUE}Waiting for deployment to be ready...${NC}"
-kubectl wait --for=condition=available --timeout=300s deployment/familyman-ui
+kubectl wait --for=condition=available --timeout=300s deployment/profile-agent
 
 echo -e "${GREEN}✓ Deployment is ready!${NC}"
 
 # Show status
 echo ""
 echo -e "${BLUE}Deployment status:${NC}"
-kubectl get pods -l app=familyman-ui
+kubectl get pods -l app=profile-agent
 echo ""
-kubectl get svc familyman-ui-service
+kubectl get svc profile-agent-service
 echo ""
-kubectl get ingress familyman-ui-ingress
+kubectl get ingress profile-agent-ingress
 
 # Get ingress URL
 echo ""
@@ -78,8 +78,8 @@ echo -e "${GREEN}Application deployed successfully!${NC}"
 echo -e "Access at: ${BLUE}https://profile.krishb.in${NC}"
 echo ""
 echo "Useful commands:"
-echo "  View logs:    kubectl logs -l app=familyman-ui -f"
-echo "  Get pods:     kubectl get pods -l app=familyman-ui"
-echo "  Describe pod: kubectl describe pod -l app=familyman-ui"
-echo "  Port forward: kubectl port-forward svc/familyman-ui-service 3000:80 8001:8001"
+echo "  View logs:    kubectl logs -l app=profile-agent -f"
+echo "  Get pods:     kubectl get pods -l app=profile-agent"
+echo "  Describe pod: kubectl describe pod -l app=profile-agent"
+echo "  Port forward: kubectl port-forward svc/profile-agent-service 3000:80 8001:8001"
 echo "  Delete:       kubectl delete -k k8s/overlays/$OVERLAY"

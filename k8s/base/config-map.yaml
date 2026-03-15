@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: familyman-ui-config
+  name: profile-agent-config
 data:
   # Next.js configuration
   NODE_ENV: "production"

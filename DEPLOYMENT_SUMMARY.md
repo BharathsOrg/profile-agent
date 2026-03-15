@@ -1,11 +1,11 @@
-# FamilyMan UI - Deployment Quick Reference
+# Profile Agent - Deployment Quick Reference
 
 ## ✅ What Was Completed
 
 1. **Docker Containerization**
    - Multi-stage Dockerfile created
    - Single container runs both Next.js (port 3000) and FastAPI (port 8001)
-   - Image built and pushed to Docker Hub: `krishbharath/familyman-ui:latest`
+   - Image built and pushed to Docker Hub: `krishbharath/profile-agent:latest`
    - Image digest: sha256:6280b90e7e9b17363c4061e2a4827ad34607d9d2c1ef9cb61a224270cc50e863
 
 2. **Kubernetes Manifests**
@@ -41,32 +41,32 @@
 ### Build and Deploy
 ```bash
 # Build and push image (use --no-cache to ensure latest code)
-docker build --no-cache -t krishbharath/familyman-ui:latest .
-docker push krishbharath/familyman-ui:latest
+docker build --no-cache -t krishbharath/profile-agent:latest .
+docker push krishbharath/profile-agent:latest
 
 # Deploy to Kubernetes
 kubectl apply -f k8s/base/secret.yaml
 ./scripts/deploy-k8s.sh
 
 # Restart deployment to pull latest image
-kubectl rollout restart deployment/familyman-ui
-kubectl rollout status deployment/familyman-ui
+kubectl rollout restart deployment/profile-agent
+kubectl rollout status deployment/profile-agent
 ```
 
 ### Check Status
 ```bash
 # Pod status
-kubectl get pods -l app=familyman-ui
+kubectl get pods -l app=profile-agent
 
 # View logs (both services)
-kubectl logs -l app=familyman-ui -f
+kubectl logs -l app=profile-agent -f
 
 # Check service endpoints
-kubectl get svc familyman-ui-service
-kubectl get ingress familyman-ui-ingress
+kubectl get svc profile-agent-service
+kubectl get ingress profile-agent-ingress
 
 # Describe pod for detailed info
-kubectl describe pod -l app=familyman-ui
+kubectl describe pod -l app=profile-agent
 ```
 
 ### Verify Services
@@ -107,7 +107,7 @@ kubectl apply -f k8s/base/secret.yaml
 
 **URL:** https://profile.krishb.in
 
-**Docker Hub:** https://hub.docker.com/r/krishbharath/familyman-ui
+**Docker Hub:** https://hub.docker.com/r/krishbharath/profile-agent
 
 ## 🏗️ Infrastructure
 

@@ -10,7 +10,7 @@ resources:
 
 # Optional: Override config values for local environment
 # configMapGenerator:
-#   - name: familyman-ui-config
+#   - name: profile-agent-config
 #     behavior: merge
 #     literals:
 #       - LOG_LEVEL=debug

@@ -1,13 +1,13 @@
-# AGENTS.md - FamilyMan UI Project Context
+# AGENTS.md - Profile Agent Project Context
 
-This file provides context for OpenClaw and other AI agents working on the `familyman-ui` project.
+This file provides context for OpenClaw and other AI agents working on the `profile-agent` project.
 
 ## Project Overview
 
-**"Bharath's Assistant" (formerly FamilyMan)** is an AI-powered personal assistant designed to represent Bharath Krishna to recruiters and hiring managers. It combines an interactive Next.js profile page with a Python backend agent (Google ADK + CopilotKit).
+**Profile Agent** is an AI-powered personal assistant designed to represent Bharath Krishna to recruiters and hiring managers. It combines an interactive Next.js profile page with a Python backend agent (Google ADK + CopilotKit).
 
 - **Goal:** Showcase Bharath's 15+ years of experience via a conversational interface that can control the UI.
-- **Source of Truth:** `/home/bharath/workspace/familyman-ui/Bharath_CV_2025.pdf` is the definitive source for experience, skills, and education data.
+- **Source of Truth:** `/home/bharath/workspace/profile_agent/Bharath_CV_2025.pdf` is the definitive source for experience, skills, and education data.
 
 ## Architecture
 
@@ -38,7 +38,7 @@ This file provides context for OpenClaw and other AI agents working on the `fami
 
 ## Development Commands
 
-Run these from the project root (`~/workspace/familyman-ui/`):
+Run these from the project root (`~/workspace/profile_agent/`):
 
 ```bash
 # Start both Frontend (3000) and Agent (8000)
@@ -66,7 +66,7 @@ pnpm lint
 
 ## Recent Changes (Log)
 
-- **Renaming:** Agent renamed from "FamilyMan" to "Bharath's Assistant".
+- **Renaming:** Project renamed from "FamilyMan" to "Profile Agent".
 - **Layout:** Switched to an ATS-friendly Sidebar + Main Content layout.
 - **Education:** Moved above Experience, compacted to a 2-column grid.
 - **Skills:** Removed "AI/ML" category (PyTorch/ONNX) per user request.

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Build script for FamilyMan UI Docker image
+# Build script for Profile Agent Docker image
 
 set -e
 
@@ -9,7 +9,7 @@ BLUE='\033[0;34m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}Building FamilyMan UI Docker image...${NC}"
+echo -e "${BLUE}Building Profile Agent Docker image...${NC}"
 
 # Get the script directory and project root
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -18,7 +18,7 @@ PROJECT_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
 cd "$PROJECT_ROOT"
 
 # Default image name and tag
-IMAGE_NAME="${IMAGE_NAME:-familyman-ui}"
+IMAGE_NAME="${IMAGE_NAME:-profile-agent}"
 IMAGE_TAG="${IMAGE_TAG:-latest}"
 REGISTRY="${REGISTRY:-}"
 

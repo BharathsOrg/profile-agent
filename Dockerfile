@@ -17,7 +17,7 @@ RUN if [ -f pnpm-lock.yaml ]; then \
     elif [ -f yarn.lock ]; then \
         yarn install --frozen-lockfile --ignore-scripts; \
     else \
-        npm ci --ignore-scripts; \
+        npm install --ignore-scripts; \
     fi
 
 # Copy application source

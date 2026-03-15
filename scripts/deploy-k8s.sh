@@ -18,8 +18,9 @@ cd "$PROJECT_ROOT"
 
 # Default overlay
 OVERLAY="${1:-local}"
+NAMESPACE="profile-agent"
 
-echo -e "${BLUE}Deploying Profile Agent to Kubernetes (overlay: $OVERLAY)...${NC}"
+echo -e "${BLUE}Deploying Profile Agent to Kubernetes (overlay: $OVERLAY, namespace: $NAMESPACE)...${NC}"
 
 # Check if kubectl is available
 if ! command -v kubectl &> /dev/null; then
@@ -32,6 +33,11 @@ if ! kubectl cluster-info &> /dev/null; then
     echo -e "${RED}Error: Cannot connect to Kubernetes cluster${NC}"
     exit 1
 fi
+
+# Create namespace if it doesn't exist
+echo -e "${BLUE}Creating namespace '$NAMESPACE' if it doesn't exist...${NC}"
+kubectl create namespace "$NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
+echo -e "${GREEN}✓ Namespace ready${NC}"
 
 # Check if secret exists
 if [ ! -f "k8s/base/secret.yaml" ]; then
@@ -46,40 +52,41 @@ if [ ! -f "k8s/base/secret.yaml" ]; then
         exit 1
     fi
 else
-    echo -e "${BLUE}Applying secrets...${NC}"
-    kubectl apply -f k8s/base/secret.yaml
+    echo -e "${BLUE}Applying secrets to namespace '$NAMESPACE'...${NC}"
+    kubectl apply -f k8s/base/secret.yaml -n "$NAMESPACE"
     echo -e "${GREEN}✓ Secrets applied${NC}"
 fi
 
 # Apply kustomization
-echo -e "${BLUE}Applying kustomization from k8s/overlays/$OVERLAY...${NC}"
-kubectl apply -k "k8s/overlays/$OVERLAY"
+echo -e "${BLUE}Applying kustomization from k8s/overlays/$OVERLAY to namespace '$NAMESPACE'...${NC}"
+kubectl apply -k "k8s/overlays/$OVERLAY" -n "$NAMESPACE"
 
 echo -e "${GREEN}✓ Deployment applied${NC}"
 
 # Wait for deployment to be ready
 echo -e "${BLUE}Waiting for deployment to be ready...${NC}"
-kubectl wait --for=condition=available --timeout=300s deployment/profile-agent
+kubectl wait --for=condition=available --timeout=300s deployment/profile-agent -n "$NAMESPACE"
 
 echo -e "${GREEN}✓ Deployment is ready!${NC}"
 
 # Show status
 echo ""
-echo -e "${BLUE}Deployment status:${NC}"
-kubectl get pods -l app=profile-agent
+echo -e "${BLUE}Deployment status (namespace: $NAMESPACE):${NC}"
+kubectl get pods -l app=profile-agent -n "$NAMESPACE"
 echo ""
-kubectl get svc profile-agent-service
+kubectl get svc profile-agent-service -n "$NAMESPACE"
 echo ""
-kubectl get ingress profile-agent-ingress
+kubectl get ingress profile-agent-ingress -n "$NAMESPACE"
 
 # Get ingress URL
 echo ""
 echo -e "${GREEN}Application deployed successfully!${NC}"
 echo -e "Access at: ${BLUE}https://profile.krishb.in${NC}"
+echo -e "Namespace: ${BLUE}$NAMESPACE${NC}"
 echo ""
 echo "Useful commands:"
-echo "  View logs:    kubectl logs -l app=profile-agent -f"
-echo "  Get pods:     kubectl get pods -l app=profile-agent"
-echo "  Describe pod: kubectl describe pod -l app=profile-agent"
-echo "  Port forward: kubectl port-forward svc/profile-agent-service 3000:80 8001:8001"
-echo "  Delete:       kubectl delete -k k8s/overlays/$OVERLAY"
+echo "  View logs:    kubectl logs -l app=profile-agent -f -n $NAMESPACE"
+echo "  Get pods:     kubectl get pods -l app=profile-agent -n $NAMESPACE"
+echo "  Describe pod: kubectl describe pod -l app=profile-agent -n $NAMESPACE"
+echo "  Port forward: kubectl port-forward svc/profile-agent-service 3000:80 8001:8001 -n $NAMESPACE"
+echo "  Delete:       kubectl delete -k k8s/overlays/$OVERLAY -n $NAMESPACE"

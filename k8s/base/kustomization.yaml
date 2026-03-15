@@ -1,7 +1,12 @@
 # k8s/base/kustomization.yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+
+# Set default namespace for all resources
+namespace: profile-agent
+
 resources:
+  - namespace.yaml
   - config-map.yaml
   # The secret-template.yaml is used to generate the secret.yaml file using kustomize's generator feature.
   # cp secret-template.yaml secret.yaml

@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 
 import { CopilotKit } from "@copilotkit/react-core";
+import { Provider } from "@/components/ui/provider";
 import "./globals.css";
 import "@copilotkit/react-ui/styles.css";
 
 export const metadata: Metadata = {
   title: "Bharath Krishna - AI Profile",
-  description: "Interactive AI Agent Profile for Bharath Krishna powered by CopilotKit and Google ADK",
+  description:
+    "Interactive AI Agent Profile for Bharath Krishna powered by CopilotKit and Google ADK",
 };
 
 export default function RootLayout({
@@ -17,9 +19,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={"antialiased"}>
-        <CopilotKit runtimeUrl="/api/copilotkit" agent="BharathAssistant">
-          {children}
-        </CopilotKit>
+        <Provider>
+          <CopilotKit runtimeUrl="/api/copilotkit" agent="BharathAssistant">
+            {children}
+          </CopilotKit>
+        </Provider>
       </body>
     </html>
   );

@@ -274,14 +274,6 @@ Full-stack engineer with 15 years of professional experience (2010-2025). Proven
 - NextJS
 - Chakra UI
 
-### ML Frameworks
-- ONNX
-- PyTorch
-- TensorRT
-- NVIDIA Triton
-- DeepSpeed
-- Accelerate
-
 ### Infrastructure
 - Ansible
 - Terraform

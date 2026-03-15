@@ -202,6 +202,11 @@ pip install -r requirements.txt
 - Verify agent name matches between frontend and backend
 - Check that tool functions pass complete state, not partial updates
 
+**ChakraUI v3 breaks Tailwind styles (page loses alignment/look):**
+- Cause: ChakraUI's `defaultSystem` injects a CSS preflight (global reset) that overwrites Tailwind base styles
+- Fix: Use `createSystem(defaultConfig, { preflight: false })` instead of `defaultSystem` in [src/components/ui/provider.tsx](src/components/ui/provider.tsx)
+- This disables ChakraUI's global CSS reset while keeping all component styles (Cards, Buttons, etc.) fully functional
+
 ## FamilyMan Agent Implementation
 
 ### Agent Purpose

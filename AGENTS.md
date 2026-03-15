@@ -12,16 +12,18 @@ This file provides context for OpenClaw and other AI agents working on the `fami
 ## Architecture
 
 ### 1. Frontend (Next.js 16 + React 19)
+
 - **Path:** `src/app/page.tsx`
 - **UI:** Single-page "ATS-compliant" dashboard layout (Sidebar + Main Content).
 - **Interactive Components:** `CopilotSidebar`, `ExperienceTimeline`, `SkillsFilter`.
 - **Frontend Tools:** The agent can control the UI via these tools defined in `page.tsx`:
-    - `setThemeColor`: Change the primary theme color.
-    - `highlightSection`: Scroll to and flash a specific section (e.g., "experience", "skills").
-    - `filterSkills`: Scroll to the skills section (filtering visual logic simplified).
-    - `showExperienceDetails`: Scroll to a specific job entry (`exp-1` to `exp-7`).
+  - `setThemeColor`: Change the primary theme color.
+  - `highlightSection`: Scroll to and flash a specific section (e.g., "experience", "skills").
+  - `filterSkills`: Scroll to the skills section (filtering visual logic simplified).
+  - `showExperienceDetails`: Scroll to a specific job entry (`exp-1` to `exp-7`).
 
 ### 2. Backend Agent (Python FastAPI + Google ADK)
+
 - **Path:** `agent/main.py`
 - **Framework:** Google Agent Development Kit (ADK) + CopilotKit.
 - **Model:** Gemini 2.5 Flash.
@@ -30,6 +32,7 @@ This file provides context for OpenClaw and other AI agents working on the `fami
 - **System Prompt:** Injects Bharath's full professional profile into the model context via `before_model_modifier`.
 
 ### 3. Integration Layer
+
 - **Path:** `src/app/api/copilotkit/route.ts`
 - **Role:** Bridges the Next.js frontend and the Python agent running on port 8000.
 

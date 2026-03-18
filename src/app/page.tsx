@@ -674,7 +674,23 @@ export default function ProfilePage() {
                 <SimpleGrid
                   columns={{ base: 1, sm: 2, md: 3, lg: 4, xl: 5 }}
                   gap="3"
+                  w="100%"
+                  minChildWidth="200px"
                 >
+                  <ProjectItem
+                    title="Profile Agent"
+                    description="AI assistant showcasing my background, built with Google ADK and CopilotKit."
+                    githubUrl="https://github.com/bharath-krishna/profile_agent"
+                    liveUrl="https://profile.krishb.in"
+                  />
+
+                  <ProjectItem
+                    title="fastapi_framework"
+                    description="Reusable FastAPI framework with best practices for Python backend development."
+                    githubUrl="https://github.com/bharath-krishna/fastapi_framework"
+                    liveUrl="https://profile.krishb.in"
+                  />
+
                   <ProjectItem
                     title="Profile Agent"
                     description="AI assistant showcasing my background, built with Google ADK and CopilotKit."
@@ -802,23 +818,60 @@ function ProjectItem({
   liveUrl: string;
 }) {
   return (
-    <Card.Root variant="outline" size="sm">
-      <Card.Header pb="1">
-        <Card.Title fontSize="sm">{title}</Card.Title>
+    <Card.Root variant="outline" h="100%" display="flex" flexDirection="column">
+      <Card.Header pb="2" pt="3" px="3">
+        <Card.Title
+          fontSize={{ base: "xs", md: "sm", lg: "md" }}
+          wordBreak="break-word"
+          whiteSpace="normal"
+          lineHeight="1.3"
+        >
+          {title}
+        </Card.Title>
       </Card.Header>
-      <Card.Body pt="1" pb="1">
-        <Card.Description fontSize="xs">{description}</Card.Description>
+      <Card.Body pt="0" pb="2" px="3" flex="1" overflow="visible">
+        <Card.Description
+          fontSize={{ base: "xs", md: "sm" }}
+          wordBreak="break-word"
+          whiteSpace="normal"
+          lineHeight="1.4"
+        >
+          {description}
+        </Card.Description>
       </Card.Body>
-      <Card.Footer gap="2" pt="2">
-        <Button asChild variant="outline" size="xs" colorPalette="gray">
+      <Card.Footer
+        gap="2"
+        pt="2"
+        px="3"
+        pb="2"
+        flexDirection="row"
+        w="100%"
+        borderTop="1px solid"
+        borderTopColor="gray.200"
+      >
+        <Button
+          asChild
+          variant="outline"
+          size="xs"
+          colorPalette="gray"
+          flex="1"
+          fontSize={{ base: "xs", md: "sm" }}
+        >
           <a href={githubUrl} target="_blank" rel="noopener noreferrer">
-            <Github size={12} />
+            <Github size={14} />
             GitHub
           </a>
         </Button>
-        <Button asChild variant="outline" size="xs" colorPalette="blue">
+        <Button
+          asChild
+          variant="outline"
+          size="xs"
+          colorPalette="blue"
+          flex="1"
+          fontSize={{ base: "xs", md: "sm" }}
+        >
           <a href={liveUrl} target="_blank" rel="noopener noreferrer">
-            <Globe size={12} />
+            <Globe size={14} />
             Live
           </a>
         </Button>

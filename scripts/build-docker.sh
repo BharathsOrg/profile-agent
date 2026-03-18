@@ -17,37 +17,48 @@ PROJECT_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
 
 cd "$PROJECT_ROOT"
 
-# Default image name and tag
+# Default image name and registry
 IMAGE_NAME="${IMAGE_NAME:-profile-agent}"
-IMAGE_TAG="${IMAGE_TAG:-latest}"
 REGISTRY="${REGISTRY:-}"
 
-# Full image name
-if [ -n "$REGISTRY" ]; then
-    FULL_IMAGE_NAME="$REGISTRY/$IMAGE_NAME:$IMAGE_TAG"
-else
-    FULL_IMAGE_NAME="$IMAGE_NAME:$IMAGE_TAG"
-fi
+# Get short commit hash
+COMMIT_HASH=$(git rev-parse --short HEAD)
 
-echo -e "${BLUE}Building image: $FULL_IMAGE_NAME${NC}"
+# Build image with local tags first
+echo -e "${BLUE}Building image: $IMAGE_NAME:latest and $IMAGE_NAME:$COMMIT_HASH${NC}"
 
-# Build the image
 docker build \
-    --tag "$FULL_IMAGE_NAME" \
+    --tag "$IMAGE_NAME:latest" \
+    --tag "$IMAGE_NAME:$COMMIT_HASH" \
     --file Dockerfile \
     .
 
-echo -e "${GREEN}✓ Successfully built: $FULL_IMAGE_NAME${NC}"
+echo -e "${GREEN}✓ Successfully built:${NC}"
+echo -e "  - $IMAGE_NAME:latest"
+echo -e "  - $IMAGE_NAME:$COMMIT_HASH"
 
-# Ask if user wants to push to registry
+# If registry is specified, tag and push
 if [ -n "$REGISTRY" ]; then
+    REGISTRY_IMAGE_LATEST="$REGISTRY/$IMAGE_NAME:latest"
+    REGISTRY_IMAGE_COMMIT="$REGISTRY/$IMAGE_NAME:$COMMIT_HASH"
+
     echo ""
-    read -p "Push to registry $REGISTRY? (y/N): " -n 1 -r
+    echo -e "${BLUE}Registry detected: $REGISTRY${NC}"
+    echo "Ready to tag and push:"
+    echo "  - $REGISTRY_IMAGE_LATEST"
+    echo "  - $REGISTRY_IMAGE_COMMIT"
+    echo ""
+    read -p "Push to registry? (y/N): " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        echo -e "${BLUE}Pushing image to registry...${NC}"
-        docker push "$FULL_IMAGE_NAME"
-        echo -e "${GREEN}✓ Successfully pushed: $FULL_IMAGE_NAME${NC}"
+        echo -e "${BLUE}Tagging images...${NC}"
+        docker tag "$IMAGE_NAME:latest" "$REGISTRY_IMAGE_LATEST"
+        docker tag "$IMAGE_NAME:$COMMIT_HASH" "$REGISTRY_IMAGE_COMMIT"
+
+        echo -e "${BLUE}Pushing images to registry...${NC}"
+        docker push "$REGISTRY_IMAGE_LATEST"
+        docker push "$REGISTRY_IMAGE_COMMIT"
+        echo -e "${GREEN}✓ Successfully pushed both tags${NC}"
     fi
 fi
 

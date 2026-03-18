@@ -4,7 +4,7 @@ FROM node:20-alpine AS nextjs-builder
 
 WORKDIR /app
 
-# Copy package files
+# Copy package files only (for layer caching)
 COPY package*.json ./
 COPY package-lock.json* ./
 COPY pnpm-lock.yaml* ./
@@ -20,8 +20,13 @@ RUN if [ -f pnpm-lock.yaml ]; then \
         npm install --ignore-scripts; \
     fi
 
-# Copy application source
-COPY . .
+# Copy application source (after dependencies for better caching)
+COPY src ./src
+COPY public ./public
+COPY next.config.ts ./
+COPY tsconfig.json* ./
+COPY eslint.config.mjs ./
+COPY postcss.config.mjs ./
 
 # Build Next.js application
 RUN npm run build
@@ -36,7 +41,7 @@ RUN apt-get update && apt-get install -y \
     gcc \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy agent files
+# Copy agent dependency files only (for layer caching)
 COPY agent/pyproject.toml agent/uv.lock* ./
 
 # Install uv for faster Python package installation
@@ -44,6 +49,9 @@ RUN pip install uv
 
 # Install Python dependencies
 RUN uv pip install --system --no-cache -r pyproject.toml
+
+# Copy agent source code (after dependencies for better caching)
+COPY agent ./
 
 # Stage 3: Production image with both services
 FROM python:3.12-slim
@@ -69,9 +77,8 @@ COPY --from=nextjs-builder /app/package.json ./package.json
 COPY --from=nextjs-builder /app/public ./public
 COPY --from=nextjs-builder /app/next.config.ts ./next.config.ts
 
-# Copy source files needed at runtime
-COPY src ./src
-COPY agent ./agent
+# Copy agent from builder (source already copied in python-builder stage)
+COPY --from=python-builder /app/agent ./agent
 
 # Copy startup script
 COPY scripts/docker-entrypoint.sh /usr/local/bin/

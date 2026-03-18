@@ -14,49 +14,49 @@ spec:
         app: profile-agent
     spec:
       containers:
-      - name: profile-agent
-        image: krishbharath/profile-agent:latest
-        imagePullPolicy: Always # Always pull from Docker Hub
-        ports:
-        - containerPort: 3000
-          name: nextjs
-          protocol: TCP
-        - containerPort: 8001
-          name: agent
-          protocol: TCP
-        envFrom:
-        - configMapRef:
-            name: profile-agent-config
-        - secretRef:
-            name: profile-agent-secrets
-        volumeMounts:
-        - name: conversation-notes
-          mountPath: /conversation_notes
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "500m"
-          limits:
-            memory: "2Gi"
-            cpu: "2000m"
-        # livenessProbe:
-        #   httpGet:
-        #     path: /
-        #     port: 3000
-        #   initialDelaySeconds: 30
-        #   periodSeconds: 10
-        #   timeoutSeconds: 5
-        #   failureThreshold: 3
-        # readinessProbe:
-        #   httpGet:
-        #     path: /
-        #     port: 3000
-        #   initialDelaySeconds: 20
-        #   periodSeconds: 5
-        #   timeoutSeconds: 3
-        #   failureThreshold: 3
+        - name: profile-agent
+          image: krishbharath/profile-agent-dev:latest
+          imagePullPolicy: Always # Always pull from Docker Hub
+          ports:
+            - containerPort: 3000
+              name: nextjs
+              protocol: TCP
+            - containerPort: 8001
+              name: agent
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: profile-agent-config
+            - secretRef:
+                name: profile-agent-secrets
+          volumeMounts:
+            - name: conversation-notes
+              mountPath: /conversation_notes
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "2Gi"
+              cpu: "2000m"
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: 3000
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 10
+          #   timeoutSeconds: 5
+          #   failureThreshold: 3
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: 3000
+          #   initialDelaySeconds: 20
+          #   periodSeconds: 5
+          #   timeoutSeconds: 3
+          #   failureThreshold: 3
       volumes:
-      - name: conversation-notes
-        hostPath:
-          path: /home/bharath/agent_conversation_notes
-          type: DirectoryOrCreate
+        - name: conversation-notes
+          hostPath:
+            path: /home/bharath/agent_conversation_notes
+            type: DirectoryOrCreate

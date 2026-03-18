@@ -675,22 +675,10 @@ export default function ProfilePage() {
                   columns={{ base: 1, sm: 2, md: 3, lg: 4, xl: 5 }}
                   gap="3"
                   w="100%"
-                  minChildWidth="200px"
+                  // minChildWidth="200px"
+                  minW={"20%"}
+                  maxW={"100%"}
                 >
-                  <ProjectItem
-                    title="Profile Agent"
-                    description="AI assistant showcasing my background, built with Google ADK and CopilotKit."
-                    githubUrl="https://github.com/bharath-krishna/profile_agent"
-                    liveUrl="https://profile.krishb.in"
-                  />
-
-                  <ProjectItem
-                    title="fastapi_framework"
-                    description="Reusable FastAPI framework with best practices for Python backend development."
-                    githubUrl="https://github.com/bharath-krishna/fastapi_framework"
-                    liveUrl="https://profile.krishb.in"
-                  />
-
                   <ProjectItem
                     title="Profile Agent"
                     description="AI assistant showcasing my background, built with Google ADK and CopilotKit."

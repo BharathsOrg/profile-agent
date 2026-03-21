@@ -401,6 +401,16 @@ export default function ProfilePage() {
                 <h2 className="text-base font-medium text-blue-400 uppercase tracking-wide">
                   Full Stack Engineer & AgenticAI
                 </h2>
+                <a
+                  href="/BharathKrishnaResume.pdf"
+                  download="BharathKrishnaResume.pdf"
+                  className="inline-flex items-center gap-2 mt-3 px-4 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-full transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3" />
+                  </svg>
+                  Download Resume
+                </a>
               </div>
 
               {/* Contact */}

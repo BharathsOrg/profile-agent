@@ -131,6 +131,45 @@ source agent/.venv/bin/activate
 python agent/main.py
 ```
 
+### Docker & Kubernetes Deployment
+
+The deployment pipeline automatically builds, pushes to registry, and deploys with image versioning based on commit hashes.
+
+```bash
+# Set registry and deploy to local Kubernetes
+export REGISTRY=docker.io/krishbharath
+bash scripts/build-docker.sh        # Builds image with commit hash tag
+bash scripts/deploy-k8s.sh local    # Deploys using kustomize with commit hash
+```
+
+**How it works:**
+1. `build-docker.sh` builds image with tags `profile-agent:latest` and `profile-agent:{commit-hash}`
+2. If `REGISTRY` env var is set, automatically tags and pushes both images to registry
+3. Updates `k8s/overlays/local/kustomization.yaml` with the commit hash
+4. `deploy-k8s.sh` applies kustomization, which updates the deployment image to registry URL with commit hash
+5. Kubernetes pulls fresh image from registry with `imagePullPolicy: Always`
+
+**Image Versioning Benefits:**
+- Each commit has a unique, traceable image tag
+- Deployment restarts automatically pull latest image from registry
+- Easy rollback: deploy a previous commit to get that version
+- Clean git history → clean Docker image history
+
+**Troubleshooting Deployments:**
+```bash
+# View current deployed image
+kubectl get deployment profile-agent -n profile-agent -o jsonpath='{.spec.template.spec.containers[0].image}'
+
+# Check pod status
+kubectl get pods -l app=profile-agent -n profile-agent
+
+# View logs
+kubectl logs -l app=profile-agent -f -n profile-agent
+
+# Verify image was pushed
+docker images | grep profile-agent
+```
+
 ## Important Implementation Notes
 
 ### Adding New Agent Tools

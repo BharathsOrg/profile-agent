@@ -37,57 +37,45 @@ echo -e "${GREEN}✓ Successfully built:${NC}"
 echo -e "  - $IMAGE_NAME:latest"
 echo -e "  - $IMAGE_NAME:$COMMIT_HASH"
 
-# If registry is specified, tag and push
+# If registry is specified, tag and push to registry
 if [ -n "$REGISTRY" ]; then
     REGISTRY_IMAGE_LATEST="$REGISTRY/$IMAGE_NAME:latest"
     REGISTRY_IMAGE_COMMIT="$REGISTRY/$IMAGE_NAME:$COMMIT_HASH"
 
     echo ""
     echo -e "${BLUE}Registry detected: $REGISTRY${NC}"
-    echo "Ready to tag and push:"
-    echo "  - $REGISTRY_IMAGE_LATEST"
-    echo "  - $REGISTRY_IMAGE_COMMIT"
-    echo ""
-    read -p "Push to registry? (y/N): " -n 1 -r
-    echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        echo -e "${BLUE}Tagging images...${NC}"
-        docker tag "$IMAGE_NAME:latest" "$REGISTRY_IMAGE_LATEST"
-        docker tag "$IMAGE_NAME:$COMMIT_HASH" "$REGISTRY_IMAGE_COMMIT"
+    echo -e "${BLUE}Tagging images for registry...${NC}"
+    docker tag "$IMAGE_NAME:latest" "$REGISTRY_IMAGE_LATEST"
+    docker tag "$IMAGE_NAME:$COMMIT_HASH" "$REGISTRY_IMAGE_COMMIT"
 
-        echo -e "${BLUE}Pushing images to registry...${NC}"
-        docker push "$REGISTRY_IMAGE_LATEST"
-        docker push "$REGISTRY_IMAGE_COMMIT"
-        echo -e "${GREEN}✓ Successfully pushed both tags${NC}"
-    fi
+    echo -e "${BLUE}Pushing images to registry...${NC}"
+    docker push "$REGISTRY_IMAGE_LATEST"
+    docker push "$REGISTRY_IMAGE_COMMIT"
+    echo -e "${GREEN}✓ Successfully pushed to registry:${NC}"
+    echo -e "  - $REGISTRY_IMAGE_LATEST"
+    echo -e "  - $REGISTRY_IMAGE_COMMIT"
 fi
 
-# If using minikube or kind, offer to load the image
-if command -v minikube &> /dev/null && minikube status &> /dev/null; then
+# Update kustomization with commit hash for automatic image updates
+KUSTOMIZATION_FILE="$PROJECT_ROOT/k8s/overlays/local/kustomization.yaml"
+if [ -f "$KUSTOMIZATION_FILE" ]; then
     echo ""
-    read -p "Load image into minikube? (y/N): " -n 1 -r
-    echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        echo -e "${BLUE}Loading image into minikube...${NC}"
-        minikube image load "$FULL_IMAGE_NAME"
-        echo -e "${GREEN}✓ Image loaded into minikube${NC}"
+    echo -e "${BLUE}Updating kustomization with commit hash: $COMMIT_HASH${NC}"
+    # Use sed to update the newTag field (handles both existing and new entries)
+    if grep -q "newTag:" "$KUSTOMIZATION_FILE"; then
+        sed -i "s/newTag: .*/newTag: \"$COMMIT_HASH\"/" "$KUSTOMIZATION_FILE"
+    else
+        # Add images section if it doesn't exist
+        sed -i "/^resources:/a\\
+# Use registry image with commit hash for automatic updates on deployment\\
+images:\\
+  - name: krishbharath/profile-agent\\
+    newTag: \"$COMMIT_HASH\"\\
+" "$KUSTOMIZATION_FILE"
     fi
-elif command -v kind &> /dev/null && kind get clusters &> /dev/null; then
-    echo ""
-    read -p "Load image into kind? (y/N): " -n 1 -r
-    echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        echo -e "${BLUE}Loading image into kind...${NC}"
-        kind load docker-image "$FULL_IMAGE_NAME"
-        echo -e "${GREEN}✓ Image loaded into kind${NC}"
-    fi
+    echo -e "${GREEN}✓ Kustomization updated with tag: $COMMIT_HASH${NC}"
 fi
 
 echo ""
-echo -e "${GREEN}Build complete!${NC}"
-echo -e "Image: ${BLUE}$FULL_IMAGE_NAME${NC}"
-echo ""
-echo "Next steps:"
-echo "1. Create your secrets: cp k8s/base/secret-template.yaml k8s/base/secret.yaml"
-echo "2. Edit k8s/base/secret.yaml with your base64-encoded secrets"
-echo "3. Deploy to k8s: kubectl apply -k k8s/overlays/local"
+echo -e "${GREEN}Build and push complete!${NC}"
+echo "Next step: Deploy to Kubernetes with updated image tag"

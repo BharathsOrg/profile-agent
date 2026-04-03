@@ -16,7 +16,7 @@ spec:
       containers:
         - name: profile-agent
           image: krishbharath/profile-agent:latest
-          imagePullPolicy: Always # Always pull from Docker Hub
+          imagePullPolicy: Always # Always pull latest from registry
           ports:
             - containerPort: 3000
               name: nextjs

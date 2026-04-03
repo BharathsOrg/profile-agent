@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  profile-agent:
+    image: krishbharath/profile-agent:latest
+    container_name: profile-agent-local
+    ports:
+      - "3000:3000"  # Next.js frontend
+      - "8001:8001"  # FastAPI agent backend
+    environment:
+      # Next.js configuration
+      NODE_ENV: production
+      PORT: 3000
+
+      # FastAPI agent configuration
+      PYTHON_PORT: 8001
+
+      # Model configuration
+      # For local testing with Ollama (recommended):
+      USE_LITELLM: "true"
+      MODEL_NAME: "openai/qwen3-coder-next:q4_K_M"
+      OPENAI_API_BASE: "https://ollama.krishb.in/v1"
+      OPENAI_API_KEY: "dummy"
+
+      # For testing with Google Gemini (requires GOOGLE_API_KEY):
+      # USE_LITELLM: "false"
+      # MODEL_NAME: "gemini-2.5-flash"
+      # GOOGLE_API_KEY: "${GOOGLE_API_KEY}"
+
+      # Observability
+      OPIK_URL_OVERRIDE: "https://opik.krishb.in/api"
+      NOTES_DIR: /conversation_notes
+
+      # Logging
+      LOG_LEVEL: info
+
+      # Optional secrets (base64 decoded from k8s/base/secret.yaml)
+      # LANGFUSE_PUBLIC_KEY: "${LANGFUSE_PUBLIC_KEY}"
+      # LANGFUSE_SECRET_KEY: "${LANGFUSE_SECRET_KEY}"
+      # LANGFUSE_BASE_URL: "${LANGFUSE_BASE_URL}"
+
+    volumes:
+      # Mount conversation notes directory (same as k8s hostPath)
+      - conversation-notes:/conversation_notes
+
+    # Resource limits matching k8s deployment
+    mem_limit: 2g
+    memswap_limit: 2g
+    cpus: "2"
+
+    # Healthcheck matching k8s probes
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+    networks:
+      - profile-agent-network
+
+volumes:
+  conversation-notes:
+    driver: local
+
+networks:
+  profile-agent-network:
+    driver: bridge

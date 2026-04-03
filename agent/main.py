@@ -17,12 +17,15 @@ from google.adk.agents.callback_context import CallbackContext
 from google.adk.models.llm_request import LlmRequest
 from google.adk.models.llm_response import LlmResponse
 from google.adk.models.lite_llm import LiteLlm
-from google.adk.tools import ToolContext
+from google.adk.tools import BaseTool, ToolContext
 from google.genai import types
 from pydantic import BaseModel, Field
 
 from langfuse import get_client
 from openinference.instrumentation.google_adk import GoogleADKInstrumentor
+from common.custom_agent import CustomAgent
+from google.adk.planners import BuiltInPlanner
+# from common.tools import filesystem_toolset
 
 load_dotenv()
 
@@ -468,17 +471,17 @@ else:
     model = model_name
     print(f"Using native Gemini model: {model_name}")
 
+# def simple_after_tool_modifier(tool:BaseTool, args: Dict[str, Any], tool_context: ToolContext, tool_response: Dict) -> Optional[Dict]:
+#     """Example after tool callback that could modify the tool response."""
+#     # For demonstration, we will just pass through the original tool response without modification.
+#     # You can add custom logic here to inspect or modify the tool response if needed.
+#     return None  # Return None to indicate no modification
 
 
-
-from google.adk.planners import BuiltInPlanner
-
-
-
-profile_agent = Agent(
+profile_agent = CustomAgent(
     name="BharathAssistant",
     # model="gemini-2.5-flash",
-    model=model,
+    # model=model,
     description="Bharath's Personal Assistant Agent",
     instruction="""You are Bharath's Personal Assistant.
 
@@ -515,7 +518,7 @@ Keep your responses short and professional, likve a conversation. With in three 
     before_agent_callback=on_before_agent,
     before_model_callback=before_model_modifier,
     after_model_callback=simple_after_model_modifier,
-    # sub_agents=[profile_agent],
+    # after_tool_callback=simple_after_tool_modifier,
     planner=BuiltInPlanner(
         thinking_config=types.ThinkingConfig(
             include_thoughts=False,  # capture intermediate reasoning
@@ -593,23 +596,23 @@ async def health_check():
         "llm": "unknown"
     }
     
-    # Quick LLM connectivity check
-    try:
-        if use_litellm:
-            # Try a minimal completion to check connectivity
-            response = await litellm.acompletion(
-                model=litellm_model if 'litellm_model' in dir() else model_name,
-                messages=[{"role": "user", "content": "hi"}],
-                max_tokens=1,
-                timeout=5
-            )
-            health_status["llm"] = "ok"
-        else:
-            health_status["llm"] = "native_gemini"
-    except Exception as e:
-        health_status["llm"] = f"error: {str(e)[:100]}"
+#     # Quick LLM connectivity check
+#     try:
+#         if use_litellm:
+#             # Try a minimal completion to check connectivity
+#             response = await litellm.acompletion(
+#                 model=litellm_model if 'litellm_model' in dir() else model_name,
+#                 messages=[{"role": "user", "content": "hi"}],
+#                 max_tokens=1,
+#                 timeout=5
+#             )
+#             health_status["llm"] = "ok"
+#         else:
+#             health_status["llm"] = "native_gemini"
+#     except Exception as e:
+#         health_status["llm"] = f"error: {str(e)[:100]}"
         
-    return health_status
+#     return health_status
 
 
 # Add the ADK endpoint

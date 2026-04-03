@@ -4,6 +4,11 @@ kind: Kustomization
 resources:
   - ../../base
 
+# Use registry image with commit hash for automatic updates on deployment
+images:
+  - name: krishbharath/profile-agent
+    newTag: "9a04e61"
+
 # Patches for local development (optional)
 # patchesStrategicMerge:
 #   - service-patch.yaml

@@ -385,7 +385,7 @@ export default function ProfilePage() {
 
         {/* Session Usage (moved to header) */}
         <div className="min-h-screen bg-gray-100 flex justify-center items-start p-0 md:p-8 print:p-0 font-sans text-slate-800">
-          <div className="w-full max-w-[1400px] bg-white shadow-xl grid grid-cols-1 lg:grid-cols-[280px_1fr] min-h-[90vh] print:shadow-none print:grid-cols-[280px_1fr]">
+          <div className="w-full max-w-[1400px] bg-white shadow-xl grid grid-cols-1 lg:grid-cols-[320px_1fr] min-h-[90vh] print:shadow-none print:grid-cols-[280px_1fr]">
             {/* SIDEBAR */}
             <aside className="bg-slate-50 border-r border-gray-200 p-6 flex flex-col gap-6 print:bg-white">
               {/* Header */}
@@ -406,8 +406,19 @@ export default function ProfilePage() {
                   download="BharathKrishnaResume.pdf"
                   className="inline-flex items-center gap-2 mt-3 px-4 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-full transition-colors"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"
+                    />
                   </svg>
                   Download Resume
                 </a>
@@ -697,9 +708,9 @@ export default function ProfilePage() {
                   />
 
                   <ProjectItem
-                    title="fastapi_framework"
-                    description="Reusable FastAPI framework with best practices for Python backend development."
-                    githubUrl="https://github.com/bharath-krishna/fastapi_framework"
+                    title="SDLC Agent"
+                    description="an SWE agent harness following SDLC principles to generate a fully functional backend api service."
+                    githubUrl="https://github.com/bharath-krishna/sdlc-agent"
                     liveUrl="https://profile.krishb.in"
                   />
                 </SimpleGrid>

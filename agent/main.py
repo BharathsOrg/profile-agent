@@ -330,12 +330,11 @@ Includes health checks, session stats, and Ask-AI hooks across every section for
 - GitHub: https://github.com/bharath-krishna/profile_agent
 - Deployment: https://profile.krishb.in
 
-### FastAPI Framework
-Modular starter kit that encodes Bharath's best practices for production-grade Python services.
-Ships with opinionated architecture for auth, observability, and CI/CD so new services bootstrap quickly.
-- Tech Stack: FastAPI, Pydantic, SQLModel, Celery workers, Redis, PostgreSQL, GitHub Actions
-- GitHub: https://github.com/bharath-krishna/fastapi_framework
-- Deployment: https://profile.krishb.in (framework services hosted behind the main domain)
+### SDLC Agent
+A Software Engineering Development Lifecycle (SDLC) agent harness following industry best practices to generate fully functional backend API services.
+Demonstrates multi-agent orchestration with planning, validation, and code implementation workflows. Example implementation: "The Enchanted Doll Shop" - a production-grade inventory and reservation system.
+- Tech Stack: Python, Google ADK, FastAPI, Pydantic, Multi-agent orchestration (root agent, planner agent, developer agent), Opik tracing, LiteLLM
+- GitHub: https://github.com/bharath-krishna/sdlc-agent
 
 ## Conversation Notes
 {conversation_notes}

@@ -43,8 +43,8 @@ echo -e "${GREEN}✓ Namespace ready${NC}"
 if [ ! -f "k8s/base/secret.yaml" ]; then
     echo -e "${YELLOW}Warning: k8s/base/secret.yaml not found!${NC}"
     echo "Please create it from the template:"
-    echo "  cp k8s/base/secret-template.yaml k8s/base/secret.yaml"
-    echo "  # Edit secret.yaml and add your base64-encoded secrets"
+    # echo "  cp k8s/base/secret-template.yaml k8s/base/secret.yaml"
+    # echo "  # Edit secret.yaml and add your base64-encoded secrets"
     echo ""
     read -p "Continue without applying secrets? (y/N): " -n 1 -r
     echo

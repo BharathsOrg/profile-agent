@@ -45,5 +45,5 @@ jobs:
             git push
           fi
 
-      - name: Deploy to Kubernetes
-        run: echo "y" | bash scripts/deploy-k8s.sh local
+      # - name: Deploy to Kubernetes
+      #   run: echo "y" | bash scripts/deploy-k8s.sh local

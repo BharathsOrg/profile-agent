@@ -19,7 +19,7 @@ cd "$PROJECT_ROOT"
 
 # Default image name and registry
 IMAGE_NAME="${IMAGE_NAME:-profile-agent}"
-REGISTRY="${REGISTRY:-}"
+REGISTRY="${REGISTRY:-us-west2-docker.pkg.dev/krishproject87/profile-agent}"
 
 # Get short commit hash
 COMMIT_HASH=$(git rev-parse --short HEAD)
@@ -69,7 +69,7 @@ if [ -f "$KUSTOMIZATION_FILE" ]; then
         sed -i "/^resources:/a\\
 # Use registry image with commit hash for automatic updates on deployment\\
 images:\\
-  - name: krishbharath/profile-agent\\
+  - name: us-west2-docker.pkg.dev/krishproject87/profile-agent/profile-agent\\
     newTag: \"$COMMIT_HASH\"\\
 " "$KUSTOMIZATION_FILE"
     fi

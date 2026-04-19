@@ -44,8 +44,6 @@ This is a CopilotKit + Google ADK (Agent Development Kit) integration project th
      - `after_model_modifier`: Control agent execution flow
    - Three agent tools:
      - `add_conversation_note`: Track important points from recruiter discussions
-     - `get_weather`: Demonstrate generative UI rendering (example tool)
-     - `get_person_card`: Future family tree features (reserved for future use)
    - Profile data architecture: Static profile in system prompt, dynamic conversation notes in state
    - Connects to remote profile agent on port 8003 via `RemoteA2aAgent` (currently disabled)
 
@@ -69,8 +67,6 @@ This is a CopilotKit + Google ADK (Agent Development Kit) integration project th
 - Frontend registers render handlers via `useRenderToolCall` matching tool names
 - Active examples:
   - `add_conversation_note` renders a green success card when notes are added
-  - `get_weather` renders [WeatherCard](src/components/weather.tsx) component
-  - `get_person_card` renders [PersonDetails](src/components/person-details.tsx) component
 
 **Frontend Actions Pattern:**
 - Frontend exposes UI control capabilities to agent via `useFrontendTool`
@@ -176,7 +172,7 @@ docker images | grep profile-agent
 
 **Backend Tools (Python):**
 1. Define the tool function in [agent/main.py](agent/main.py) with `tool_context: ToolContext` parameter
-2. Add to the `tools` list in the `LlmAgent` initialization (currently: `add_conversation_note`, `get_weather`, `get_person_card`)
+2. Add to the `tools` list in the `LlmAgent` initialization (currently: `add_conversation_note`)
 3. For Generative UI tools, register a render handler in [src/app/page.tsx](src/app/page.tsx) using `useRenderToolCall`
 4. Update types in [src/lib/types.ts](src/lib/types.ts) if state shape changes
 

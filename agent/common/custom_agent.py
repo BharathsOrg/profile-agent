@@ -4,7 +4,8 @@ from google.adk.agents.base_agent import BaseAgent
 from typing import AsyncGenerator
 from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events import Event
-
+from google.adk.tools import BaseTool, ToolContext
+from typing import Dict, Any, List
 
 
 import os
@@ -28,7 +29,7 @@ else:
 
 
 
-class CustomAgent(LlmAgent):
+class CustomAgent(Agent):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs, model=model)
 

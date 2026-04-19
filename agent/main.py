@@ -7,6 +7,7 @@ import time
 from typing import Dict, Optional
 
 from ag_ui_adk import ADKAgent, add_adk_fastapi_endpoint
+from ag_ui_adk.endpoint import create_adk_app
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
@@ -14,18 +15,23 @@ from starlette.middleware.base import BaseHTTPMiddleware
 import litellm
 from google.adk.agents import LlmAgent, Agent
 from google.adk.agents.callback_context import CallbackContext
+from google.adk.agents.remote_a2a_agent import RemoteA2aAgent
 from google.adk.models.llm_request import LlmRequest
 from google.adk.models.llm_response import LlmResponse
 from google.adk.models.lite_llm import LiteLlm
 from google.adk.tools import BaseTool, ToolContext
+from google.adk.tools.agent_tool import AgentTool
 from google.genai import types
 from pydantic import BaseModel, Field
 
 from langfuse import get_client
 from openinference.instrumentation.google_adk import GoogleADKInstrumentor
 from common.custom_agent import CustomAgent
+from common.profile import PROFILE_CONTEXT
+from common.tools import add_conversation_note, memory_toolset, share_profile
 from google.adk.planners import BuiltInPlanner
 # from common.tools import filesystem_toolset
+from typing import Any
 
 load_dotenv()
 
@@ -49,121 +55,6 @@ class ProfileState(BaseModel):
         default=None,
         description="Message ID of the last response (for correlation)",
     )
-
-
-def add_conversation_note(
-    tool_context: ToolContext,
-    note: str,
-    source: str = "Unknown"
-) -> Dict[str, str]:
-    """
-    Add a note about the current conversation for future reference.
-    Writes to individual files with timestamp in agent/notes/ directory.
-
-    Use this to track:
-    - Key recruiter questions or concerns
-    - Specific job requirements discussed
-    - Follow-up items or next steps
-    - Important discussion points
-
-    Args:
-        note: A concise note about the conversation
-        source: The name of the person (e.g., recruiter) or source of the note
-
-    Returns:
-        Dict indicating success and the note added
-    """
-    try:
-        from datetime import datetime
-        import os
-        
-        # Ensure notes directory exists
-        notes_dir = os.path.join(os.environ.get("NOTES_DIR", os.path.dirname(os.path.abspath(__file__))), "notes")
-        os.makedirs(notes_dir, exist_ok=True)
-        
-        # Generate timestamp and filename
-        timestamp = datetime.now()
-        date_str = timestamp.strftime("%Y-%m-%d")
-        time_str = timestamp.strftime("%H-%M-%S")
-        filename = f"{date_str}_{time_str}_note.md"
-        filepath = os.path.join(notes_dir, filename)
-        
-        # Create note content with timestamp
-        note_content = f"# Conversation Note\n\n## {timestamp.strftime('%Y-%m-%d %H:%M:%S')}\n\n{note}\n \n*Source: {source}*"
-        
-        # Write to file
-        with open(filepath, "w", encoding="utf-8") as f:
-            f.write(note_content)
-        
-        # Also add to context list for the agent
-        context_list = tool_context.state.get("conversation_context", [])
-        if context_list is None:
-            context_list = []
-        
-        timestamped_note = f"[{timestamp.strftime('%Y-%m-%d %H:%M:%S')}] {note}"
-        context_list.append(timestamped_note)
-        
-        tool_context.state["conversation_context"] = context_list
-        
-        return {
-            "status": "success",
-            "message": f"Note added: {note}",
-            "filepath": filepath
-        }
-    except Exception as e:
-        return {
-            "status": "error",
-            "message": f"Error adding note: {str(e)}"
-        }
-
-
-# def get_weather(tool_context: ToolContext, location: str) -> Dict[str, str]:
-#     """Get the weather for a given location. Ensure location is fully spelled out."""
-#     return {"status": "success", "message": f"The weather in {location} is sunny."}
-
-# def get_person_card(
-#     tool_context: ToolContext,
-#     firstName: str,
-#     lastName: str,
-#     name: str,
-#     age: int,
-#     gender: str,
-#     email: str,
-#     relationship: str,
-#     exploration_depth: int,
-#     is_complete: bool,
-#     last_updated: str,
-# ) -> Dict:
-#     """
-#     Get details about a person from the family tree.
-
-#     Args:
-#         firstName: Person's first name
-#         lastName: Person's last name
-#         name: Full name of the person
-#         age: Person's age
-#         gender: Person's gender
-#         email: Person's email address
-#         relationship: Relationship type (e.g., FATHER_OF, MOTHER_OF)
-#         exploration_depth: Depth of exploration in the family tree
-#         is_complete: Whether the person's data is complete
-#         last_updated: Last update timestamp
-
-#     Returns:
-#         Dictionary with person details
-#     """
-#     return {
-#         "firstName": firstName,
-#         "lastName": lastName,
-#         "name": name,
-#         "age": age,
-#         "gender": gender,
-#         "email": email,
-#         "relationship": relationship,
-#         "exploration_depth": exploration_depth,
-#         "is_complete": is_complete,
-#         "last_updated": last_updated,
-#     }
 
 
 def on_before_agent(callback_context: CallbackContext):
@@ -205,142 +96,7 @@ def before_model_modifier(
                 conversation_notes = f"Error serializing notes: {str(e)}"
 
         # Build comprehensive profile context
-        profile_context = f"""# BHARATH KRISHNA - PROFESSIONAL PROFILE
-
-## Contact Information
-- Phones: +1 8574379316, +91 7760779000
-- Email: bharath.chakravarthi@gmail.com
-- Website: https://profile.krishb.in
-
-## Professional Summary
-Full-stack engineer with 15 years of professional experience (2010-2025). Proven expertise in building scalable AI/ML platforms, high-availability services, and DevOps pipelines. Strong background in designing LLM inference pipelines, managing Kubernetes clusters, and automating infrastructure with Terraform & Ansible. Deep knowledge of Python (15 years) and Go (7 years).
-
-## Work Experience (Detailed Timeline)
-
-### 1. Senior Software Engineer – Rakuten USA, California (May 2022 – Present)
-- Build AgenticAI solutions for internal services
-- Manage LLM deployments for peak usage
-- Develop UI, API & CLI tools for submitting training jobs on HPC clusters
-- Setup MLOps pipeline for model development & deployment
-- Maintain high-performance Kubernetes cluster
-- Implemented model inference platform using BentoML
-- Configured IAM via Keycloak
-- Automated infrastructure with Terraform & Ansible
-- Configured DNS & Load Balancer for HPC services
-- Developed custom K8s operators
-- Led UI developers & infrastructure engineers
-- Tech Stack: Golang, Python, Kubernetes, Ansible, Terraform, Graph DBs, AgenticAI
-
-### 2. Application Engineer – Rakuten, Inc., Tokyo (Jan 2018 – May 2022)
-- Built Infrastructure as Code with Terraform & Ansible
-- Extended Terraform with custom plugins & Go SDKs
-- Wrote pytest & Locust tests for service stability
-- Created toolkit for building/testing/deploying REST APIs (FastAPI, Gin)
-- Implemented auth services using Keycloak & Kong
-- Tech Stack: Golang, Python, Kubernetes, Ansible, Terraform, Graph DBs, AgenticAI
-
-### 3. Application Engineer – Rakuten India Enterprise Pvt. Ltd., Bengaluru (Sep 2014 – Dec 2018)
-- Built APIs for IaaS (VMware vSphere), DNS (Nominum, Infoblox) & Load Balancer (BigIP)
-- Developed batch scripts & daily Airflow jobs for auth data collection
-- Led a team of 3; acted as Scrum Master
-- Collaborated across teams for requirement gathering & service improvement
-- Tech Stack: Python, Ansible
-
-### 4. Associate IT Consultant – ITC Infotech & Robert Bosch, Bengaluru (Jan 2014 – Sep 2014)
-- Supported source-code management hotline (MKS, ClearQuest)
-- Automated support tasks with Perl scripts
-- Tech Stack: Perl
-
-### 5. Software Engineer – eHover Systems India Pvt. Ltd. (Apr 2011 – Apr 2013)
-- Developed secure cloud-based personal surveillance system (EC2, S3)
-- Created web interface (PHP, CodeIgniter) for CCTV data access
-- Tech Stack: Perl, PHP, AWS (S3, Route53, EC2), ZoneMinder
-
-### 6. Project Assistant – Kuvempu University (Sep 2010 – Feb 2011)
-- Developed Perl modules for automated molecular-dynamic simulations
-- Built web app (Python, libSBML) to analyze SBML files
-- Tech Stack: BioPython, BioPerl, LibSBML, Gromacs
-
-### 7. Intern – Software Developer – IBAB, Bengaluru (Apr 2010 – Feb 2011)
-- Built "Mammalian Gene Expression Database"
-- Developed web app (PERL, MySQL, JavaScript) for bio-curator data maintenance
-- Tech Stack: Perl, MySQL, JavaScript
-
-## Technical Skills (8 Categories)
-
-### Languages & Web
-- Python (15 years experience)
-- Go (7 years experience)
-
-### Frontend
-- React
-- NextJS
-- Chakra UI
-
-### Infrastructure
-- Ansible
-- Terraform
-
-### Frameworks
-- FastAPI
-- Gin Gonic
-
-### Databases
-- PostgreSQL
-- MongoDB
-- Couchbase
-
-### CI/CD & Build
-- Jenkins
-- GitHub Actions
-
-### Cloud & Orchestration
-- Kubernetes (7 years experience)
-- GCP
-
-## Certifications & Recognitions
-- Certified Kubernetes Administrator (CKA) – Linux Foundation
-
-## Education
-- Bachelor's degree in Biotechnology – Kuvempu University, Karnataka (Majors: Biotechnology, Botany, Computer Science)
-- Master's in Bioinformatics – Kuvempu University, Karnataka (Focus: Genomics, Drug Discovery, Protein Engineering)
-
-## Personal Profile
-- Age: 38 years
-- Date of Birth: 28/10/1987
-- Gender: Male
-- Nationality: Indian
-- Languages Known: Kannada, English, Hindi, Telugu
-- Hobbies & Interests: Gardening and movies
-
-## Key Strengths
-- DevOps & LLM-Ops engineering
-- Deep knowledge of Python (15 years) & Go (7 years)
-- Backend service development (RESTful APIs)
-- Front-end development with React, NextJS, Chakra UI
-- Cloud services (GCP) & container orchestration
-- Agile-Scrum methodology
-- Quick learner, self-starter, team player
-
-## Featured Projects
-### Profile Agent
-AI-forward portfolio that embeds an on-page assistant able to answer recruiter questions contextually.
-Includes health checks, session stats, and Ask-AI hooks across every section for deeper conversations.
-- Tech Stack: Next.js 14, React Server Components, CopilotKit, Google ADK backend (FastAPI), Chakra UI, Tailwind CSS, LiteLLM router
-- GitHub: https://github.com/bharath-krishna/profile_agent
-- Deployment: https://profile.krishb.in
-
-### SDLC Agent
-A Software Engineering Development Lifecycle (SDLC) agent harness following industry best practices to generate fully functional backend API services.
-Demonstrates multi-agent orchestration with planning, validation, and code implementation workflows. Example implementation: "The Enchanted Doll Shop" - a production-grade inventory and reservation system.
-- Tech Stack: Python, Google ADK, FastAPI, Pydantic, Multi-agent orchestration (root agent, planner agent, developer agent), Opik tracing, LiteLLM
-- GitHub: https://github.com/bharath-krishna/sdlc-agent
-
-## Conversation Notes
-{conversation_notes}
-
----
-You are Bharath's Personal Assistant. Use this profile information to answer questions about Bharath's background, experience, and skills. When discussing with recruiters, advocate on his behalf by highlighting relevant achievements and experience."""
+        profile_context = PROFILE_CONTEXT.format(conversation_notes=conversation_notes)
 
         # Add profile context to system instruction
         original_instruction = llm_request.config.system_instruction or types.Content(
@@ -358,6 +114,8 @@ You are Bharath's Personal Assistant. Use this profile information to answer que
         # Modify the text of the first part
         if original_instruction.parts and len(original_instruction.parts) > 0:
             modified_text = profile_context + "\n\n" + (original_instruction.parts[0].text or "")
+            modified_text = modified_text + "\n\n" + f"Token Usage: {callback_context.state.get('total_token_count', 0)} tokens used in this session so far.\
+                Max Tokens for this model: 262000 tokens. Be concise in your responses to stay within limits."
             original_instruction.parts[0].text = modified_text
 
         # TODO: Check model type to set system_instruction appropriately
@@ -470,11 +228,24 @@ else:
     model = model_name
     print(f"Using native Gemini model: {model_name}")
 
-# def simple_after_tool_modifier(tool:BaseTool, args: Dict[str, Any], tool_context: ToolContext, tool_response: Dict) -> Optional[Dict]:
-#     """Example after tool callback that could modify the tool response."""
-#     # For demonstration, we will just pass through the original tool response without modification.
-#     # You can add custom logic here to inspect or modify the tool response if needed.
-#     return None  # Return None to indicate no modification
+def simple_before_tool_modifier(tool:BaseTool, args: Dict[str, Any], tool_context: ToolContext) -> Optional[Dict]:
+    """Example before tool callback that could modify the tool arguments."""
+    # For demonstration, we will just pass through the original arguments without modification.
+    # You can add custom logic here to inspect or modify the tool arguments if needed.
+    return None  # Return None to indicate no modification
+
+def simple_after_tool_modifier(tool:BaseTool, args: Dict[str, Any], tool_context: ToolContext, tool_response: Dict) -> Optional[Dict]:
+    """Example after tool callback that could modify the tool response."""
+    # For demonstration, we will just pass through the original tool response without modification.
+    # You can add custom logic here to inspect or modify the tool response if needed.
+
+    return None  # Return None to indicate no modification
+
+# sdlc_agent = RemoteA2aAgent(
+#     name="SDLCAgent",
+#     description="An agent that can generate code for a complete backend API service based on software requirements.",
+#     agent_card="http://localhost:8088/.well-known/agent-card.json"
+# )
 
 
 profile_agent = CustomAgent(
@@ -499,25 +270,21 @@ Use the add_conversation_note tool to track important points from discussions wi
 - Follow-up items or next steps
 - Areas of particular interest
 
-IMPORTANT RULES ABOUT WEATHER AND THE GET_WEATHER TOOL:
-1. Only call the get_weather tool if the user asks you for the weather in a given location.
-2. If the user does not specify a location, you can use the location "Everywhere ever in the whole wide world"
-
-Examples of when to use the get_weather tool:
-- "What's the weather today in Tokyo?" → Use the tool with the location "Tokyo"
-- "Whats the weather right now" → Use the location "Everywhere ever in the whole wide world"
-- "Is it raining in London?" → Use the tool with the location "London"
 Keep your responses short and professional, likve a conversation. With in three sentences maximum.
 """,
     tools=[
         add_conversation_note,
-        # get_weather,
-        # get_person_card
+        memory_toolset,
+        share_profile,
     ],
+    # sub_agents=[
+    #     sdlc_agent
+    # ],
     before_agent_callback=on_before_agent,
     before_model_callback=before_model_modifier,
-    after_model_callback=simple_after_model_modifier,
-    # after_tool_callback=simple_after_tool_modifier,
+    # after_model_callback=simple_after_model_modifier,
+    before_tool_callback=simple_before_tool_modifier,
+    after_tool_callback=simple_after_tool_modifier,
     planner=BuiltInPlanner(
         thinking_config=types.ThinkingConfig(
             include_thoughts=False,  # capture intermediate reasoning
@@ -530,13 +297,16 @@ Keep your responses short and professional, likve a conversation. With in three 
 adk_profile_agent = ADKAgent(
     adk_agent=profile_agent,
     user_id="demo_user",
-    session_timeout_seconds=3600,
+    session_timeout_seconds=3600, # 1 hour session timeout
     use_in_memory_services=True,
+    tool_timeout_seconds=600, # 10 minutes tool execution timeout
 )
 
 # Create FastAPI app
-app = FastAPI(title="Profile Agent API")
+# app = FastAPI(title="Profile Agent API")
 
+# Create via ag_ui_adk endpoint utility to ensure proper middleware setup and SSE support
+app = create_adk_app(adk_profile_agent, path="/")  # Mount the ADK endpoint at root
 
 # --- Exception Handlers ---
 @app.exception_handler(litellm.exceptions.ServiceUnavailableError)
@@ -591,9 +361,9 @@ async def general_exception_handler(request: Request, exc: Exception):
 async def health_check():
     """Check if the agent and LLM service are healthy."""
     health_status = {
-        "agent": "ok",
-        "llm": "unknown"
+        "agent": "ok"
     }
+    return JSONResponse(content=health_status)
     
 #     # Quick LLM connectivity check
 #     try:
@@ -614,22 +384,25 @@ async def health_check():
 #     return health_status
 
 
+# Disabled because using create_adk_app utility which already sets up the endpoint with proper middleware and SSE support
 # Add the ADK endpoint
-add_adk_fastapi_endpoint(app, adk_profile_agent, path="/")
+# add_adk_fastapi_endpoint(app, adk_profile_agent, path="/")
 
 
-# Initialize Langfuse
-langfuse = get_client()
+try:
+    # Initialize Langfuse
+    langfuse = get_client()
 
-# Verify connection
-if langfuse.auth_check():
-    print("Langfuse client is authenticated and ready!")
-else:
-    print("Authentication failed. Please check your credentials and host.")
+    # Verify connection
+    if langfuse.auth_check():
+        print("Langfuse client is authenticated and ready!")
+    else:
+        print("Authentication failed. Please check your credentials and host.")
 
-# Instrument with Google ADK
-GoogleADKInstrumentor().instrument()
-
+    # Instrument with Google ADK
+    GoogleADKInstrumentor().instrument()
+except Exception as e:
+    print(f"Error initializing Langfuse or Google ADK instrumentation: {str(e)}")
 
 # make sure to start opik
 # cd /home/bharath/workspace/opik

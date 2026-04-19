@@ -1,8 +1,6 @@
 "use client";
 
 import {
-  useFrontendTool,
-  useRenderToolCall,
   useCopilotChat,
   useCopilotReadable,
   useCoAgent,
@@ -17,7 +15,6 @@ import {
   Phone,
   Globe,
   MapPin,
-  CheckCircle,
   Award,
   Briefcase,
   UserCircle,
@@ -31,6 +28,7 @@ import {
   ChevronUp,
   Github,
 } from "lucide-react";
+import { useProfileAgentTools } from "@/hooks/useProfileAgentTools";
 
 const INITIAL_SUMMARY =
   "Full stack engineer with 15+ years of experience building AgenticAI solutions and HPC clusters for LLM/ML training. Expert in LLMOps pipelines, high-availability model serving, and RESTful API development. Proven track record in Kubernetes (CKA), Infrastructure-as-Code (Terraform/Ansible), and managing software development from inception to production.";
@@ -46,6 +44,11 @@ export default function ProfilePage() {
   );
   const [llmError, setLlmError] = useState<string | null>(null);
   const [showUsage, setShowUsage] = useState(false);
+  const [showShareMenu, setShowShareMenu] = useState(false);
+  const [shareEmail, setShareEmail] = useState("");
+  const [shareStatus, setShareStatus] = useState<
+    "idle" | "sending" | "sent" | "error"
+  >("idle");
 
   const { appendMessage } = useCopilotChat();
 
@@ -105,6 +108,24 @@ export default function ProfilePage() {
     }
   };
 
+  const handleShareProfile = async () => {
+    if (!shareEmail) return;
+    setShareStatus("sending");
+    try {
+      const res = await fetch("/api/share-profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: shareEmail }),
+      });
+      if (!res.ok) throw new Error("failed");
+      setShareStatus("sent");
+      setShareEmail("");
+      setTimeout(() => setShowShareMenu(false), 1500);
+    } catch {
+      setShareStatus("error");
+    }
+  };
+
   const { state: agentState } = useCoAgent<AgentState>({
     name: "BharathAssistant",
     initialState: { conversation_context: [] },
@@ -116,130 +137,8 @@ export default function ProfilePage() {
     value: summary,
   });
 
-  // Frontend tool: Update summary
-  useFrontendTool({
-    name: "updateProfessionalSummary",
-    description: "Update the professional summary section with new text.",
-    parameters: [
-      {
-        name: "newSummary",
-        description: "The new summary text to display.",
-        required: true,
-      },
-    ],
-    handler: ({ newSummary }: { newSummary: string }) => {
-      setSummary(newSummary);
-    },
-  } as any);
-
-  // Frontend tool: Set theme color
-  useFrontendTool({
-    name: "setThemeColor",
-    description: "Change the theme color of the profile page",
-    parameters: [
-      {
-        name: "themeColor",
-        description: "The theme color to set (hex color code).",
-        required: true,
-      },
-    ],
-    handler({ themeColor }: { themeColor: string }) {
-      setThemeColor(themeColor);
-    },
-  } as any);
-
-  // Frontend tool: Highlight section
-  useFrontendTool({
-    name: "highlightSection",
-    description: "Highlight a specific section of the profile and scroll to it",
-    parameters: [
-      {
-        name: "section",
-        description:
-          "Section to highlight: contact, summary, education, experience, skills, certifications",
-        required: true,
-      },
-    ],
-    handler({ section }: { section: string }) {
-      setHighlightedSection(section);
-      const element = document.getElementById(section);
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth", block: "start" });
-        // Add a temporary flash effect class
-        element.classList.add("bg-yellow-50");
-        setTimeout(() => {
-          setHighlightedSection(null);
-          element.classList.remove("bg-yellow-50");
-        }, 3000);
-      }
-    },
-  } as any);
-
-  // Frontend tool: Filter skills (Modified to just scroll/highlight since we show all)
-  useFrontendTool({
-    name: "filterSkills",
-    description: "Highlight a specific skill category",
-    parameters: [
-      {
-        name: "category",
-        description: "Category to highlight",
-        required: true,
-      },
-    ],
-    handler({ category }: { category: string }) {
-      const element = document.getElementById("skills");
-      element?.scrollIntoView({ behavior: "smooth", block: "center" });
-    },
-  } as any);
-
-  // Frontend tool: Expand experience details (Modified to just scroll since we show all)
-  useFrontendTool({
-    name: "showExperienceDetails",
-    description: "Scroll to a specific job position",
-    parameters: [
-      {
-        name: "experienceId",
-        description: "Experience ID to scroll to (exp-1 through exp-7)",
-        required: true,
-      },
-    ],
-    handler({ experienceId }: { experienceId: string }) {
-      const element = document.getElementById(experienceId);
-      element?.scrollIntoView({ behavior: "smooth", block: "center" });
-    },
-  } as any);
-
-  // Generative UI: Render conversation notes
-  useRenderToolCall({
-    name: "add_conversation_note",
-    description: "Add a note about the current conversation",
-    parameters: [],
-    render: ({ args, status }: any) => {
-      if (status === "complete") {
-        return (
-          <div className="p-3 bg-green-50 border-l-4 border-green-500 rounded-lg mb-4">
-            <div className="flex items-start gap-2">
-              <CheckCircle
-                size={18}
-                className="text-green-600 mt-0.5 flex-shrink-0"
-              />
-              <div>
-                <p className="text-base font-semibold text-green-800">
-                  Note Added
-                </p>
-                <p className="text-base text-gray-700 mt-1">{args.note}</p>
-              </div>
-            </div>
-          </div>
-        );
-      }
-      return (
-        <div className="p-3 bg-gray-50 rounded-lg mb-4">
-          <p className="text-base text-gray-500">Adding note...</p>
-        </div>
-      );
-    },
-  });
+  // Register all frontend tools
+  useProfileAgentTools({ setSummary, setThemeColor, setHighlightedSection });
 
   const handleAsk = (question: string) => {
     appendMessage(
@@ -267,6 +166,11 @@ export default function ProfilePage() {
             "Hi! I'm Bharath's personal assistant. I can guide you through his 15 years of experience.",
         }}
         suggestions={[
+          {
+            title: "Share Profile",
+            message:
+              "Can you share Bharath's profile with me via email to bharathkrishna87@gmail.com?",
+          },
           {
             title: "Experience",
             message: "How many years of experience does Bharath have?",
@@ -401,27 +305,114 @@ export default function ProfilePage() {
                 <h2 className="text-base font-medium text-blue-400 uppercase tracking-wide">
                   Full Stack Engineer & AgenticAI
                 </h2>
-                <a
-                  href="/BharathKrishnaResume.pdf"
-                  download="BharathKrishnaResume.pdf"
-                  className="inline-flex items-center gap-2 mt-3 px-4 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-full transition-colors"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-4 h-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
+                <div className="relative inline-block mt-3">
+                  {/* Trigger button */}
+                  <button
+                    onClick={() => {
+                      setShowShareMenu(!showShareMenu);
+                      setShareStatus("idle");
+                    }}
+                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-full transition-colors"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-4 h-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"
+                      />
+                    </svg>
+                    Download Resume
+                    <ChevronDown
+                      size={14}
+                      className={`transition-transform ${showShareMenu ? "rotate-180" : ""}`}
                     />
-                  </svg>
-                  Download Resume
-                </a>
+                  </button>
+
+                  {showShareMenu && (
+                    <>
+                      {/* Click-outside backdrop */}
+                      <div
+                        className="fixed inset-0 z-40"
+                        onClick={() => setShowShareMenu(false)}
+                      />
+
+                      {/* Dropdown panel */}
+                      <div className="absolute left-0 top-full mt-2 w-72 rounded-md bg-white shadow-xl ring-1 ring-black ring-opacity-10 z-50 p-3 flex flex-col gap-2">
+                        {/* Option 1: Download */}
+                        <a
+                          href="/BharathKrishnaResume.pdf"
+                          download="BharathKrishnaResume.pdf"
+                          className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md"
+                          onClick={() => setShowShareMenu(false)}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="w-4 h-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"
+                            />
+                          </svg>
+                          Download PDF
+                        </a>
+
+                        <hr className="border-gray-100" />
+
+                        {/* Option 2: Email */}
+                        <div className="flex flex-col gap-2 px-1">
+                          <span className="text-xs text-gray-500 font-medium">
+                            Email resume to:
+                          </span>
+                          <div className="flex gap-2">
+                            <input
+                              type="email"
+                              value={shareEmail}
+                              onChange={(e) => setShareEmail(e.target.value)}
+                              placeholder="recruiter@company.com"
+                              className="flex-1 text-sm border border-gray-200 rounded-md px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                            />
+                            <button
+                              onClick={handleShareProfile}
+                              disabled={
+                                shareStatus === "sending" || !shareEmail
+                              }
+                              className="px-3 py-1 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 disabled:opacity-50 rounded-md"
+                            >
+                              {shareStatus === "sending"
+                                ? "..."
+                                : shareStatus === "sent"
+                                  ? "Sent!"
+                                  : "Send"}
+                            </button>
+                          </div>
+                          {shareStatus === "error" && (
+                            <span className="text-xs text-red-500">
+                              Failed to send. Please try again.
+                            </span>
+                          )}
+                          {shareStatus === "sent" && (
+                            <span className="text-xs text-green-600">
+                              Resume sent successfully!
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
 
               {/* Contact */}

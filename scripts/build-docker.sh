@@ -69,7 +69,7 @@ if [ -f "$KUSTOMIZATION_FILE" ]; then
         sed -i "/^resources:/a\\
 # Use registry image with commit hash for automatic updates on deployment\\
 images:\\
-  - name: us-west2-docker.pkg.dev/krishproject87/profile-agent/profile-agent\\
+  - name: us-west2-docker.pkg.dev/krishproject87/docker-images/profile-agent\\
     newTag: \"$COMMIT_HASH\"\\
 " "$KUSTOMIZATION_FILE"
     fi

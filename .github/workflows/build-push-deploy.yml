@@ -30,7 +30,7 @@ jobs:
 
       - name: Build & push image
         env:
-          REGISTRY: us-west2-docker.pkg.dev/krishproject87/profile-agent
+          REGISTRY: us-west2-docker.pkg.dev/krishproject87/docker-images
         run: bash scripts/build-docker.sh
 
       - name: Commit updated kustomization

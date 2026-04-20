@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: profile-agent
-          image: us-west2-docker.pkg.dev/krishproject87/profile-agent/profile-agent:latest
+          image: us-west2-docker.pkg.dev/krishproject87/docker-images/profile-agent:latest
           imagePullPolicy: Always # Always pull latest from registry
           ports:
             - containerPort: 3000

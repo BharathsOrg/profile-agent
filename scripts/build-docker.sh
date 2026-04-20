@@ -19,7 +19,7 @@ cd "$PROJECT_ROOT"
 
 # Default image name and registry
 IMAGE_NAME="${IMAGE_NAME:-profile-agent}"
-REGISTRY="${REGISTRY:-us-west2-docker.pkg.dev/krishproject87/profile-agent}"
+REGISTRY="${REGISTRY:-us-west2-docker.pkg.dev/krishproject87/docker-images}"
 
 # Get short commit hash
 COMMIT_HASH=$(git rev-parse --short HEAD)

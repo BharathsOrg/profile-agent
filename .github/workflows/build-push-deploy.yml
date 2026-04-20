@@ -41,9 +41,12 @@ jobs:
           if git diff --cached --quiet; then
             echo "kustomization.yaml unchanged, skipping commit"
           else
-            git commit -m "ci: update image tag to $(git rev-parse --short HEAD~1)"
+            git commit -m "ci: update image tag to $(git rev-parse --short HEAD)"
             git push
           fi
 
-      # - name: Deploy to Kubernetes
-      #   run: echo "y" | bash scripts/deploy-k8s.sh local
+      - name: Copy secret.yaml to workspace
+        run: cp /home/bharath/workspace/profile_agent/k8s/base/secret.yaml k8s/base/secret.yaml
+
+      - name: Deploy to Kubernetes
+        run: echo "y" | bash scripts/deploy-k8s.sh local

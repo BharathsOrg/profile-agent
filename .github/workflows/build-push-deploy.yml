@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   build-push-deploy:
-    runs-on: arc-runner-set
+    runs-on: self-hosted
 
     steps:
       - name: Checkout

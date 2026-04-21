@@ -16,6 +16,8 @@ RUN if [ -f pnpm-lock.yaml ]; then \
         npm install -g pnpm && pnpm install --frozen-lockfile --ignore-scripts; \
     elif [ -f yarn.lock ]; then \
         yarn install --frozen-lockfile --ignore-scripts; \
+    elif [ -f package-lock.json ]; then \
+        npm ci --ignore-scripts; \
     else \
         npm install --ignore-scripts; \
     fi

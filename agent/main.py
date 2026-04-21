@@ -300,6 +300,7 @@ adk_profile_agent = ADKAgent(
     session_timeout_seconds=3600, # 1 hour session timeout
     use_in_memory_services=True,
     tool_timeout_seconds=600, # 10 minutes tool execution timeout
+    max_concurrent_executions=20, # Limit concurrent executions to prevent overload
 )
 
 # Create FastAPI app

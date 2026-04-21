@@ -26,7 +26,7 @@ Full-stack engineer with 15 years of professional experience (2010-2025). Proven
 
 ### 2. Application Engineer – Rakuten, Inc., Tokyo (Jan 2018 – May 2022)
 - Built Infrastructure as Code with Terraform & Ansible
-- Extended Terraform with custom plugins & Go SDKs
+- Extended Terraform with custom providers and  & Go SDKs/libraries for Rakuten's OneCloud project
 - Wrote pytest & Locust tests for service stability
 - Created toolkit for building/testing/deploying REST APIs (FastAPI, Gin)
 - Implemented auth services using Keycloak & Kong

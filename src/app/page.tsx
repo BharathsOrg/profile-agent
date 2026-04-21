@@ -41,54 +41,54 @@ export default function ProfilePage() {
   //   return `https://agent.krishb.in/health`;
   // };
 
-  // Health check on mount and periodically
-  useEffect(() => {
-    const checkHealth = async () => {
-      try {
-        const response = await fetch(getHealthUrl(), {
-          method: "GET",
-          signal: AbortSignal.timeout(5000),
-        });
-        const data = await response.json();
-        if (data.llm === "ok" || data.llm === "native_gemini") {
-          setLlmStatus("ok");
-          setLlmError(null);
-        } else {
-          setLlmStatus("error");
-          setLlmError(data.llm || "LLM service unavailable");
-        }
-      } catch (err) {
-        setLlmStatus("error");
-        setLlmError("Cannot connect to agent service");
-      }
-    };
+  // // Health check on mount and periodically
+  // useEffect(() => {
+  //   const checkHealth = async () => {
+  //     try {
+  //       const response = await fetch(getHealthUrl(), {
+  //         method: "GET",
+  //         signal: AbortSignal.timeout(5000),
+  //       });
+  //       const data = await response.json();
+  //       if (data.llm === "ok" || data.llm === "native_gemini") {
+  //         setLlmStatus("ok");
+  //         setLlmError(null);
+  //       } else {
+  //         setLlmStatus("error");
+  //         setLlmError(data.llm || "LLM service unavailable");
+  //       }
+  //     } catch (err) {
+  //       setLlmStatus("error");
+  //       setLlmError("Cannot connect to agent service");
+  //     }
+  //   };
 
-    checkHealth();
-    // Check every 30 seconds
-    const interval = setInterval(checkHealth, 30000);
-    return () => clearInterval(interval);
-  }, []);
+  //   checkHealth();
+  //   // Check every 30 seconds
+  //   const interval = setInterval(checkHealth, 30000);
+  //   return () => clearInterval(interval);
+  // }, []);
 
-  const retryConnection = async () => {
-    setLlmStatus("checking");
-    try {
-      const response = await fetch(getHealthUrl(), {
-        method: "GET",
-        signal: AbortSignal.timeout(5000),
-      });
-      const data = await response.json();
-      if (data.llm === "ok" || data.llm === "native_gemini") {
-        setLlmStatus("ok");
-        setLlmError(null);
-      } else {
-        setLlmStatus("error");
-        setLlmError(data.llm || "LLM service unavailable");
-      }
-    } catch (err) {
-      setLlmStatus("error");
-      setLlmError("Cannot connect to agent service");
-    }
-  };
+  // const retryConnection = async () => {
+  //   setLlmStatus("checking");
+  //   try {
+  //     const response = await fetch(getHealthUrl(), {
+  //       method: "GET",
+  //       signal: AbortSignal.timeout(5000),
+  //     });
+  //     const data = await response.json();
+  //     if (data.llm === "ok" || data.llm === "native_gemini") {
+  //       setLlmStatus("ok");
+  //       setLlmError(null);
+  //     } else {
+  //       setLlmStatus("error");
+  //       setLlmError(data.llm || "LLM service unavailable");
+  //     }
+  //   } catch (err) {
+  //     setLlmStatus("error");
+  //     setLlmError("Cannot connect to agent service");
+  //   }
+  // };
 
   const handleShareProfile = async () => {
     if (!shareEmail) return;

@@ -4,10 +4,10 @@ kind: Ingress
 metadata:
   name: profile-agent-ingress
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-    # Increase timeout for agent streaming responses
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+    # HAProxy-specific timeout annotations for SSE/streaming responses
+    haproxy.org/timeout-tunnel: "600s"
+    haproxy.org/timeout-http-request: "600s"
+    haproxy.org/timeout-http-keep-alive: "600s"
 spec:
   # HAProxy Ingress Controller (NodePort 30080) - matches all other services in the cluster
   # SSL is terminated by HAProxy on the host, so no TLS section needed here

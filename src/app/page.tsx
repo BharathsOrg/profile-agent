@@ -35,11 +35,11 @@ export default function ProfilePage() {
   const { copilotkit } = useCopilotKit();
 
   // Build health check URL based on current host
-  const getHealthUrl = () => {
-    if (typeof window === "undefined") return "http://localhost:8001/health";
-    const host = window.location.hostname;
-    return `http://localhost:8001/health`;
-  };
+  // const getHealthUrl = () => {
+  //   if (typeof window === "undefined") return "https://agent.krishb.in/health";
+  //   const host = window.location.hostname;
+  //   return `https://agent.krishb.in/health`;
+  // };
 
   // Health check on mount and periodically
   useEffect(() => {

@@ -13,13 +13,23 @@ spec:
   # SSL is terminated by HAProxy on the host, so no TLS section needed here
   ingressClassName: haproxy
   rules:
-  - host: profile.krishb.in
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: profile-agent-service
-            port:
-              number: 80
+    - host: profile.krishb.in
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: profile-agent-service
+                port:
+                  number: 80
+    - host: agent.krishb.in
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: profile-agent-service
+                port:
+                  number: 8001

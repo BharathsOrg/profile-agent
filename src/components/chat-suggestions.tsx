@@ -44,10 +44,6 @@ export function WelcomeSuggestions() {
         message: "Tell me about Bharath's Kubernetes experience",
       },
       {
-        title: "Leadership",
-        message: "Has Bharath led teams or managed people?",
-      },
-      {
         title: "Infrastructure",
         message: "What's Bharath's experience with Terraform and Ansible?",
       },

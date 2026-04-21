@@ -2446,20 +2446,20 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "a2a-sdk", specifier = ">=0.3.22" },
-    { name = "ag-ui-adk" },
-    { name = "fastapi" },
+    { name = "a2a-sdk", specifier = "==0.3.22" },
+    { name = "ag-ui-adk", specifier = "==0.3.6" },
+    { name = "fastapi", specifier = "==0.136.0" },
     { name = "google-adk", extras = ["a2a"], specifier = "==1.31.0" },
-    { name = "google-genai" },
-    { name = "ipdb", specifier = ">=0.13.13" },
+    { name = "google-genai", specifier = "==1.73.1" },
+    { name = "ipdb", specifier = "==0.13.13" },
     { name = "langfuse", specifier = "==3.10.5" },
-    { name = "litellm", specifier = ">=1.80.9" },
-    { name = "openinference-instrumentation-google-adk", specifier = ">=0.1.7" },
-    { name = "opik", specifier = ">=1.10.1" },
-    { name = "pydantic" },
-    { name = "python-dotenv" },
-    { name = "reportlab", specifier = ">=4.4.10" },
-    { name = "uvicorn", extras = ["standard"] },
+    { name = "litellm", specifier = "==1.81.6" },
+    { name = "openinference-instrumentation-google-adk", specifier = "==0.1.8" },
+    { name = "opik", specifier = "==1.10.1" },
+    { name = "pydantic", specifier = "==2.12.5" },
+    { name = "python-dotenv", specifier = "==1.2.1" },
+    { name = "reportlab", specifier = "==4.4.10" },
+    { name = "uvicorn", extras = ["standard"], specifier = "==0.38.0" },
 ]
 
 [[package]]

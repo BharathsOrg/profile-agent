@@ -38,7 +38,7 @@ export default function ProfilePage() {
   const getHealthUrl = () => {
     if (typeof window === "undefined") return "http://localhost:8001/health";
     const host = window.location.hostname;
-    return `http://${host}:8001/health`;
+    return `http://localhost:8001/health`;
   };
 
   // Health check on mount and periodically

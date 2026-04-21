@@ -1,6 +1,7 @@
 "use client";
 
-import { useFrontendTool, useRenderToolCall } from "@copilotkit/react-core";
+import { useFrontendTool, defineToolCallRenderer } from "@copilotkit/react-core/v2";
+import { z } from "zod";
 import { CheckCircle, Mail } from "lucide-react";
 
 interface ProfileAgentToolsOptions {
@@ -14,56 +15,43 @@ export function useProfileAgentTools({
   setThemeColor,
   setHighlightedSection,
 }: ProfileAgentToolsOptions) {
-  // Frontend tool: Update professional summary
   useFrontendTool({
     name: "updateProfessionalSummary",
     description: "Update the professional summary section with new text.",
-    parameters: [
-      {
-        name: "newSummary",
-        description: "The new summary text to display.",
-        required: true,
-      },
-    ],
-    handler: ({ newSummary }: { newSummary: string }) => {
+    parameters: z.object({
+      newSummary: z.string().describe("The new summary text to display."),
+    }),
+    handler: async ({ newSummary }) => {
       setSummary(newSummary);
     },
-  } as any);
+  });
 
-  // Frontend tool: Set theme color
   useFrontendTool({
     name: "setThemeColor",
     description: "Change the theme color of the profile page",
-    parameters: [
-      {
-        name: "themeColor",
-        description: "The theme color to set (hex color code).",
-        required: true,
-      },
-    ],
-    handler({ themeColor }: { themeColor: string }) {
+    parameters: z.object({
+      themeColor: z.string().describe("The theme color to set (hex color code)."),
+    }),
+    handler: async ({ themeColor }) => {
       setThemeColor(themeColor);
     },
-  } as any);
+  });
 
-  // Frontend tool: Highlight section
   useFrontendTool({
     name: "highlightSection",
     description: "Highlight a specific section of the profile and scroll to it",
-    parameters: [
-      {
-        name: "section",
-        description:
+    parameters: z.object({
+      section: z
+        .string()
+        .describe(
           "Section to highlight: contact, summary, education, experience, skills, certifications",
-        required: true,
-      },
-    ],
-    handler({ section }: { section: string }) {
+        ),
+    }),
+    handler: async ({ section }) => {
       setHighlightedSection(section);
       const element = document.getElementById(section);
       if (element) {
         element.scrollIntoView({ behavior: "smooth", block: "start" });
-        // Add a temporary flash effect class
         element.classList.add("bg-yellow-50");
         setTimeout(() => {
           setHighlightedSection(null);
@@ -71,48 +59,40 @@ export function useProfileAgentTools({
         }, 3000);
       }
     },
-  } as any);
+  });
 
-  // Frontend tool: Filter skills
   useFrontendTool({
     name: "filterSkills",
     description: "Highlight a specific skill category",
-    parameters: [
-      {
-        name: "category",
-        description: "Category to highlight",
-        required: true,
-      },
-    ],
-    handler({ category }: { category: string }) {
+    parameters: z.object({
+      category: z.string().describe("Category to highlight"),
+    }),
+    handler: async ({ category: _category }) => {
       const element = document.getElementById("skills");
       element?.scrollIntoView({ behavior: "smooth", block: "center" });
     },
-  } as any);
+  });
 
-  // Frontend tool: Expand experience details
   useFrontendTool({
     name: "showExperienceDetails",
     description: "Scroll to a specific job position",
-    parameters: [
-      {
-        name: "experienceId",
-        description: "Experience ID to scroll to (exp-1 through exp-7)",
-        required: true,
-      },
-    ],
-    handler({ experienceId }: { experienceId: string }) {
+    parameters: z.object({
+      experienceId: z
+        .string()
+        .describe("Experience ID to scroll to (exp-1 through exp-7)"),
+    }),
+    handler: async ({ experienceId }) => {
       const element = document.getElementById(experienceId);
       element?.scrollIntoView({ behavior: "smooth", block: "center" });
     },
-  } as any);
+  });
+}
 
-  // Generative UI: Render conversation notes
-  useRenderToolCall({
+export const toolRenderers = [
+  defineToolCallRenderer({
     name: "add_conversation_note",
-    description: "Add a note about the current conversation",
-    parameters: [],
-    render: ({ args, status }: any) => {
+    args: z.object({ note: z.string() }),
+    render: ({ args, status }) => {
       if (status === "complete") {
         return (
           <div className="p-3 bg-green-50 border-l-4 border-green-500 rounded-lg mb-4">
@@ -137,15 +117,12 @@ export function useProfileAgentTools({
         </div>
       );
     },
-  });
-
-  // Generative UI: Render profile shared confirmation
-  useRenderToolCall({
+  }),
+  defineToolCallRenderer({
     name: "share_profile",
-    description: "Share Bharath's profile via email",
-    parameters: [],
-    render: ({ args, status }: any) => {
-      if (status === "in-progress") {
+    args: z.object({ email: z.string(), notes: z.string().optional() }),
+    render: ({ args, status }) => {
+      if (status === "inProgress") {
         return (
           <div className="p-3 bg-blue-50 rounded-lg mb-4">
             <div className="flex items-start gap-2">
@@ -190,5 +167,5 @@ export function useProfileAgentTools({
         </div>
       );
     },
-  });
-}
+  }),
+];

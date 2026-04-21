@@ -1,11 +1,7 @@
 "use client";
 
-import {
-  useCopilotChat,
-  useCopilotReadable,
-  useCoAgent,
-} from "@copilotkit/react-core";
-import { TextMessage, MessageRole } from "@copilotkit/runtime-client-gql";
+import { useCopilotReadable } from "@copilotkit/react-core";
+import { useAgent, useCopilotKit } from "@copilotkit/react-core/v2";
 import { CopilotKitCSSProperties, CopilotSidebar } from "@copilotkit/react-ui";
 import { useState, useEffect } from "react";
 import { AgentState } from "@/lib/types";
@@ -50,7 +46,8 @@ export default function ProfilePage() {
     "idle" | "sending" | "sent" | "error"
   >("idle");
 
-  const { appendMessage } = useCopilotChat();
+  const { agent } = useAgent({ agentId: "BharathAssistant" });
+  const { copilotkit } = useCopilotKit();
 
   // Build health check URL based on current host
   const getHealthUrl = () => {
@@ -126,11 +123,6 @@ export default function ProfilePage() {
     }
   };
 
-  const { state: agentState } = useCoAgent<AgentState>({
-    name: "BharathAssistant",
-    initialState: { conversation_context: [] },
-  });
-
   useCopilotReadable({
     description:
       "The professional summary displayed on the profile page. Use this to understand Bharath's background.",
@@ -141,13 +133,12 @@ export default function ProfilePage() {
   useProfileAgentTools({ setSummary, setThemeColor, setHighlightedSection });
 
   const handleAsk = (question: string) => {
-    appendMessage(
-      new TextMessage({
-        id: Math.random().toString(36).substring(7),
-        role: MessageRole.User,
-        content: question,
-      }),
-    );
+    agent.addMessage({
+      id: Math.random().toString(36).substring(7),
+      role: "user",
+      content: question,
+    });
+    copilotkit.runAgent({ agent });
   };
 
   return (
@@ -216,7 +207,7 @@ export default function ProfilePage() {
         ]}
       >
         {/* Floating session stats badge - inside sidebar to prevent close on click */}
-        {agentState?.total_token_count && (
+        {(agent.state as AgentState)?.total_token_count && (
           <div className="fixed bottom-24 right-6 z-50">
             <div className="relative">
               <button
@@ -254,25 +245,25 @@ export default function ProfilePage() {
                         <div className="flex justify-between items-center">
                           <span className="text-slate-600">Total Tokens</span>
                           <span className="text-blue-400 font-bold bg-blue-50 px-2 py-1 rounded">
-                            {agentState.total_token_count.toLocaleString()}
+                            {(agent.state as AgentState).total_token_count!.toLocaleString()}
                           </span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-slate-600">Context Size</span>
                           <span className="text-orange-600 font-bold bg-orange-50 px-2 py-1 rounded">
-                            {agentState.last_context_tokens || 0}
+                            {(agent.state as AgentState)?.last_context_tokens || 0}
                           </span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-slate-600">Last Response</span>
                           <span className="text-blue-400 font-bold bg-blue-50 px-2 py-1 rounded">
-                            {agentState.last_response_tokens || 0}
+                            {(agent.state as AgentState)?.last_response_tokens || 0}
                           </span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-slate-600">Speed</span>
                           <span className="text-green-600 font-bold bg-green-50 px-2 py-1 rounded">
-                            {agentState.tokens_per_second || 0} t/s
+                            {(agent.state as AgentState)?.tokens_per_second || 0} t/s
                           </span>
                         </div>
                       </div>

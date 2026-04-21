@@ -5,11 +5,11 @@ export async function POST(req: NextRequest) {
   const user_message = `send my profile to ${email}, include a note ''`;
 
   try {
-    const res = await fetch("https://n8n.krishb.in/webhook/e4eb5d4d-a074-4110-9201-afac9f4016ab", {
+    const res = await fetch("https://n8n.krishb.in/webhook/" + process.env.EMAIL_WF_WEBHOOK_ID, {
       method: "POST",
       headers: {
         "Accept": "*/*",
-        "API_KEY": "apikey",
+        "API_KEY": process.env.EMAIL_WF_API_KEY || "",
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ user_message }),

@@ -114,8 +114,8 @@ def before_model_modifier(
         # Modify the text of the first part
         if original_instruction.parts and len(original_instruction.parts) > 0:
             modified_text = profile_context + "\n\n" + (original_instruction.parts[0].text or "")
-            modified_text = modified_text + "\n\n" + f"Token Usage: {callback_context.state.get('total_token_count', 0)} tokens used in this session so far.\
-                Max Tokens for this model: 262000 tokens. Be concise in your responses to stay within limits."
+            # modified_text = modified_text + "\n\n" + f"Token Usage: {callback_context.state.get('total_token_count', 0)} tokens used in this session so far.\
+            #     Max Tokens for this model: 262000 tokens. Be concise in your responses to stay within limits."
             original_instruction.parts[0].text = modified_text
 
         # TODO: Check model type to set system_instruction appropriately

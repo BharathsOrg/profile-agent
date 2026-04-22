@@ -33,6 +33,7 @@ export function useProfileAgentTools({
       themeColor: z.string().describe("The theme color to set (hex color code)."),
     }),
     handler: async ({ themeColor }) => {
+      console.log("Setting theme color to:", themeColor);
       setThemeColor(themeColor);
     },
   });

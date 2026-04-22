@@ -7,15 +7,24 @@ import { CopilotKitCSSProperties } from "@copilotkit/react-ui";
 import { useState, useEffect } from "react";
 import { AgentState } from "@/lib/types";
 import { useProfileAgentTools } from "@/hooks/useProfileAgentTools";
-import NewCopilotSidebar from "@/components/copilot-sidebar";
+import CustomCopilotSidebar from "@/components/copilot-sidebar";
 import { ProfilePageContent } from "@/components/profile-page-content";
+import { ThinkingProvider, useThinking } from "@/contexts/thinking-context";
 
 const INITIAL_SUMMARY =
   "Full stack engineer with 15+ years of experience building AgenticAI solutions and HPC clusters for LLM/ML training. Expert in LLMOps pipelines, high-availability model serving, and RESTful API development. Proven track record in Kubernetes (CKA), Infrastructure-as-Code (Terraform/Ansible), and managing software development from inception to production.";
 
 export default function ProfilePage() {
+  return (
+    <ThinkingProvider>
+      <ProfilePageInner />
+    </ThinkingProvider>
+  );
+}
+
+function ProfilePageInner() {
   const { suggestions, isLoading } = useSuggestions();
-  const [themeColor, setThemeColor] = useState("#2c3e50"); // Darker default from reference
+  const [themeColor, setThemeColor] = useState("#e7330a"); // Darker default from reference
   const [highlightedSection, setHighlightedSection] = useState<string | null>(
     null,
   );
@@ -33,6 +42,32 @@ export default function ProfilePage() {
 
   const { agent } = useAgent({ agentId: "BharathAssistant" });
   const { copilotkit } = useCopilotKit();
+  const { bindThinking } = useThinking();
+
+  useEffect(() => {
+    let pendingReasoning = "";
+    const { unsubscribe } = agent.subscribe({
+      onReasoningStartEvent: ({ event }) => {
+        console.log("[thinking] REASONING_START", event.messageId);
+        pendingReasoning = "";
+      },
+      onReasoningMessageContentEvent: ({ event, reasoningMessageBuffer }) => {
+        console.log("[thinking] REASONING_MESSAGE_CONTENT delta:", event.delta, "| buffer length:", reasoningMessageBuffer.length);
+        pendingReasoning += event.delta;
+      },
+      onReasoningEndEvent: ({ event }) => {
+        console.log("[thinking] REASONING_END", event.messageId, "| total length:", pendingReasoning.length);
+      },
+      onTextMessageStartEvent: ({ event }) => {
+        console.log("[thinking] TEXT_MESSAGE_START", event.messageId, "| pending reasoning:", pendingReasoning.length, "chars");
+        if (pendingReasoning) {
+          bindThinking(event.messageId, pendingReasoning);
+          pendingReasoning = "";
+        }
+      },
+    });
+    return unsubscribe;
+  }, [agent, bindThinking]);
 
   // Build health check URL based on current host
   // const getHealthUrl = () => {
@@ -152,7 +187,7 @@ export default function ProfilePage() {
       /> */}
       <SmartSuggestions />
       <WelcomeSuggestions />
-      <NewCopilotSidebar agentId="BharathAssistant" />
+      <CustomCopilotSidebar agentId="BharathAssistant" />
     </main>
   );
 }

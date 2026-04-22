@@ -7,7 +7,7 @@ bases:
 # Use registry image with commit hash for automatic updates on deployment
 images:
   - name: us-west2-docker.pkg.dev/krishproject87/docker-images/profile-agent
-    newTag: "a64864a"
+    newTag: "a60c190"
 
 # Patches for local development (optional)
 # patchesStrategicMerge:

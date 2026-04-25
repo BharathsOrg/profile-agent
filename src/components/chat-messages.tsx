@@ -35,7 +35,7 @@ export const CustomAssistantMessage = Object.assign(
         {reasoningContent && <ThinkingBlock content={reasoningContent} />}
         <CopilotChatAssistantMessage
           {...props}
-          className="rounded-lg rounded-tl-none bg-[#F4F4F7] px-3 py-1 text-[#1b1c1c] text-sm"
+          className="rounded-lg rounded-tl-none bg-[#f1f5f9] px-3 py-1 text-[#1b1c1c] text-sm"
         />
       </div>
     );
@@ -58,7 +58,7 @@ export const CustomUserMessage = Object.assign(
   (props: CopilotChatUserMessageProps) => (
     <CopilotChatUserMessage
       {...props}
-      messageRenderer={{ className: "bg-white border border-[#E0E0E6] rounded-lg rounded-tr-none px-3 py-2.5 text-[#1b1c1c] text-sm" }}
+      messageRenderer={{ className: "bg-white border border-[#e5e7eb] rounded-lg rounded-tr-none px-3 py-2.5 text-[#1b1c1c] text-sm" }}
     />
   ),
   {

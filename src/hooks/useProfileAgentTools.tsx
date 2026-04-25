@@ -125,7 +125,7 @@ export const toolRenderers = [
     render: ({ args, status }) => {
       if (status === "complete") {
         return (
-          <div className="flex items-center gap-2 px-3 py-2 bg-white border border-[#E0E0E6] rounded-lg text-sm">
+          <div className="flex items-center gap-2 px-3 py-2 bg-white border border-[#e5e7eb] rounded-lg text-sm">
             <Mail size={14} className="shrink-0 text-green-500" />
             <span className="text-[#1b1c1c]">
               Sent to{" "}
@@ -138,9 +138,9 @@ export const toolRenderers = [
         );
       }
       return (
-        <div className="flex items-center gap-2 px-3 py-2 bg-[#F4F4F7] rounded-lg text-sm text-[#616365]">
+        <div className="flex items-center gap-2 px-3 py-2 bg-[#f1f5f9] rounded-lg text-sm text-[#616365]">
           {/* TODO: wire --chat-primary to shared theme token */}
-          <Mail size={14} className="shrink-0" style={{ color: "var(--chat-primary, #3b82f6)" }} />
+          <Mail size={14} className="shrink-0" style={{ color: "var(--chat-primary, #60a5fa)" }} />
           <span>
             Sending to{" "}
             <span className="font-medium text-[#1b1c1c]">{args.email || "your email"}</span>

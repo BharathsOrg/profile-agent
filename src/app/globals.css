@@ -75,11 +75,11 @@ html {
 /* TODO: wire --chat-primary to shared theme token */
 .copilotKitPopup,
 .copilotKitSidebar {
-  --chat-primary: #3b82f6; /* default blue-500; replace with shared theme token later */
-  --sidebar: #fbf9f8;
-  --background: #fbf9f8;
-  --border: #E0E0E6;
-  --input: #F4F4F7;
+  --chat-primary: #60a5fa; /* blue-400, matches profile page accent; replace with shared theme token later */
+  --sidebar: #f8fafc; /* slate-50, matches profile sidebar */
+  --background: #f8fafc;
+  --border: #e5e7eb; /* gray-200, matches profile borders */
+  --input: #f1f5f9; /* slate-100 */
   font-family: var(--font-inter, Inter, sans-serif);
 }
 
@@ -87,7 +87,7 @@ html {
 .copilotKitPopupHeader,
 .copilotKitSidebarHeader {
   background: #ffffff !important;
-  border-bottom: 1px solid #E0E0E6 !important;
+  border-bottom: 1px solid #e5e7eb !important;
   min-height: 48px !important;
 }
 
@@ -104,15 +104,15 @@ html {
 /* Input container: white bg, border-top */
 .copilotKitInputContainer {
   background: #ffffff !important;
-  border-top: 1px solid #E0E0E6 !important;
+  border-top: 1px solid #e5e7eb !important;
 }
 
 /* Pill-shaped textarea */
 .copilotKitPopup textarea,
 .copilotKitSidebar textarea {
   border-radius: 9999px !important;
-  background: #F4F4F7 !important;
-  border: 1px solid #E0E0E6 !important;
+  background: #f1f5f9 !important;
+  border: 1px solid #e5e7eb !important;
   padding-left: 16px !important;
   padding-right: 16px !important;
 }
@@ -128,7 +128,7 @@ html {
 }
 .copilotKitPopup ::-webkit-scrollbar-thumb,
 .copilotKitSidebar ::-webkit-scrollbar-thumb {
-  background: #E0E0E6;
+  background: #e5e7eb;
   border-radius: 10px;
 }
 

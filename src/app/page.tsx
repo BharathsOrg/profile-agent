@@ -24,7 +24,7 @@ export default function ProfilePage() {
 
 function ProfilePageInner() {
   const { suggestions, isLoading } = useSuggestions();
-  const [themeColor, setThemeColor] = useState("#e7330a"); // Darker default from reference
+  const [themeColor, setThemeColor] = useState("#3750ef"); // Darker default from reference
   const [highlightedSection, setHighlightedSection] = useState<string | null>(
     null,
   );

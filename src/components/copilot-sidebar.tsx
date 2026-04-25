@@ -30,7 +30,7 @@ export default function CustomCopilotSidebar({ agentId }: { agentId: string }) {
           modalHeaderTitle: "Assistant",
           chatInputPlaceholder: "Ask me about Bharath's experience",
         }}
-        clickOutsideToClose={true}
+        clickOutsideToClose={false}
         inputProps={{ sendButton: VoiceInputButton }}
       />
     </ConversationProvider>

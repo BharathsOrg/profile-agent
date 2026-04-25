@@ -25,7 +25,7 @@ export default function CustomCopilotSidebar({ agentId }: { agentId: string }) {
         }}
         // agentId={agentId}
         defaultOpen={false}
-        width="1000px"
+        width="400px"
         labels={{
           modalHeaderTitle: "Assistant",
           chatInputPlaceholder: "Ask me about Bharath's experience",

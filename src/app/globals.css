@@ -131,3 +131,11 @@ html {
   background: #E0E0E6;
   border-radius: 10px;
 }
+
+/* Remove CopilotKit's default max-width on the message list so it fills popup width */
+.copilotKitMessages,
+.copilotKitPopup [class*="Messages"],
+.copilotKitPopup [class*="messages"] {
+  max-width: none !important;
+  width: 100% !important;
+}

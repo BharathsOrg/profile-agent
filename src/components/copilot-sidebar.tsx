@@ -15,7 +15,7 @@ function VoiceInputButton(props: React.ButtonHTMLAttributes<HTMLButtonElement>) 
   );
 }
 
-export default function CustomCopilotSidebar({ agentId }: { agentId: string }) {
+export default function CopilotChatWindow({ agentId }: { agentId: string }) {
   return (
     <ConversationProvider>
       <CopilotPopup className="m-0 px-0 py-0"
@@ -23,11 +23,10 @@ export default function CustomCopilotSidebar({ agentId }: { agentId: string }) {
           assistantMessage: CustomAssistantMessage,
           userMessage: CustomUserMessage,
         }}
-        // agentId={agentId}
         defaultOpen={false}
         width="400px"
         labels={{
-          modalHeaderTitle: "Assistant",
+          modalHeaderTitle: agentId,
           chatInputPlaceholder: "Ask me about Bharath's experience",
         }}
         clickOutsideToClose={false}

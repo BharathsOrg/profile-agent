@@ -7,7 +7,7 @@ import { CopilotKitCSSProperties } from "@copilotkit/react-ui";
 import { useState, useEffect } from "react";
 import { AgentState } from "@/lib/types";
 import { useProfileAgentTools } from "@/hooks/useProfileAgentTools";
-import CustomCopilotSidebar from "@/components/copilot-sidebar";
+import CopilotChatWindow from "@/components/copilot-sidebar";
 import { ProfilePageContent } from "@/components/profile-page-content";
 import { ThinkingProvider, useThinking } from "@/contexts/thinking-context";
 
@@ -187,7 +187,7 @@ function ProfilePageInner() {
       /> */}
       <SmartSuggestions />
       <WelcomeSuggestions />
-      <CustomCopilotSidebar agentId="BharathAssistant" />
+      <CopilotChatWindow agentId="BharathAssistant" />
     </main>
   );
 }

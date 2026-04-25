@@ -192,3 +192,6 @@ See `CLAUDE.md` for detailed architecture, development commands, and troubleshoo
 ---
 
 Questions? Open a recruiter chat on <https://profile.krishb.in> and ask the assistant—its literally built for that.
+
+Added elevenlabs voice agent.
+Commit casually

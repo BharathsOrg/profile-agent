@@ -1,6 +1,6 @@
 'use client';
 
-import { CopilotChatInput, CopilotSidebar } from "@copilotkit/react-core/v2";
+import { CopilotChatInput, CopilotSidebar, CopilotPopup } from "@copilotkit/react-core/v2";
 import "@copilotkit/react-core/v2/styles.css";
 import { ConversationProvider } from "@elevenlabs/react";
 import { CustomAssistantMessage, CustomUserMessage } from "./chat-messages";
@@ -18,18 +18,19 @@ function VoiceInputButton(props: React.ButtonHTMLAttributes<HTMLButtonElement>) 
 export default function CustomCopilotSidebar({ agentId }: { agentId: string }) {
   return (
     <ConversationProvider>
-      <CopilotSidebar
+      <CopilotPopup className="m-0 px-0 py-0"
         messageView={{
           assistantMessage: CustomAssistantMessage,
           userMessage: CustomUserMessage,
         }}
-        agentId={agentId}
+        // agentId={agentId}
         defaultOpen={false}
-        width="400px"
+        width="1000px"
         labels={{
           modalHeaderTitle: "Assistant",
-          chatInputPlaceholder: "Ask me anything about Bharath's experience...",
+          chatInputPlaceholder: "Ask me about Bharath's experience",
         }}
+        clickOutsideToClose={true}
         inputProps={{ sendButton: VoiceInputButton }}
       />
     </ConversationProvider>

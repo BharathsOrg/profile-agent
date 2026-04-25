@@ -123,48 +123,29 @@ export const toolRenderers = [
     name: "share_profile",
     args: z.object({ email: z.string(), notes: z.string().optional() }),
     render: ({ args, status }) => {
-      if (status === "inProgress") {
-        return (
-          <div className="p-3 bg-blue-50 rounded-lg mb-4">
-            <div className="flex items-start gap-2">
-              <Mail size={18} className="text-blue-600 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-base font-semibold text-blue-800">
-                  Sharing Profile
-                </p>
-                <p className="text-base text-gray-500 mt-1">
-                  Sending to {args.email || "your email"}...
-                </p>
-              </div>
-            </div>
-          </div>
-        );
-      }
       if (status === "complete") {
         return (
-          <div className="p-3 bg-blue-50 border-l-4 border-blue-500 rounded-lg mb-4">
-            <div className="flex items-start gap-2">
-              <Mail size={18} className="text-blue-600 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-base font-semibold text-blue-800">
-                  Profile Shared
-                </p>
-                <p className="text-base text-gray-700 mt-1">
-                  Sent to <span className="font-medium">{args.email}</span>
-                  {args.notes && (
-                    <span className="block text-sm text-gray-500 mt-0.5">
-                      Note: {args.notes}
-                    </span>
-                  )}
-                </p>
-              </div>
-            </div>
+          <div className="flex items-center gap-2 px-3 py-2 bg-white border border-[#E0E0E6] rounded-lg text-sm">
+            <Mail size={14} className="shrink-0 text-green-500" />
+            <span className="text-[#1b1c1c]">
+              Sent to{" "}
+              <span className="font-medium">{args.email}</span>
+              {args.notes && (
+                <span className="block text-xs text-[#616365] mt-0.5">{args.notes}</span>
+              )}
+            </span>
           </div>
         );
       }
       return (
-        <div className="p-3 bg-gray-50 rounded-lg mb-4">
-          <p className="text-base text-gray-500">Sending profile...</p>
+        <div className="flex items-center gap-2 px-3 py-2 bg-[#F4F4F7] rounded-lg text-sm text-[#616365]">
+          {/* TODO: wire --chat-primary to shared theme token */}
+          <Mail size={14} className="shrink-0" style={{ color: "var(--chat-primary, #3b82f6)" }} />
+          <span>
+            Sending to{" "}
+            <span className="font-medium text-[#1b1c1c]">{args.email || "your email"}</span>
+            …
+          </span>
         </div>
       );
     },

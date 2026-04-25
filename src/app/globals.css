@@ -69,3 +69,65 @@ html {
   font-size: 16px !important;
   touch-action: manipulation;
 }
+
+/* ========== Career Pulse Chat Restyle ========== */
+
+/* TODO: wire --chat-primary to shared theme token */
+.copilotKitPopup,
+.copilotKitSidebar {
+  --chat-primary: #3b82f6; /* default blue-500; replace with shared theme token later */
+  --sidebar: #fbf9f8;
+  --background: #fbf9f8;
+  --border: #E0E0E6;
+  --input: #F4F4F7;
+  font-family: var(--font-inter, Inter, sans-serif);
+}
+
+/* Header: white, border-bottom, compact */
+.copilotKitPopupHeader,
+.copilotKitSidebarHeader {
+  background: #ffffff !important;
+  border-bottom: 1px solid #E0E0E6 !important;
+  min-height: 48px !important;
+}
+
+/* Header title: Manrope, theme primary color */
+.copilotKitPopupHeader h2,
+.copilotKitSidebarHeader h2 {
+  font-family: var(--font-manrope, Manrope, sans-serif) !important;
+  color: var(--chat-primary) !important; /* TODO: wire --chat-primary to shared theme token */
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  letter-spacing: -0.01em !important;
+}
+
+/* Input container: white bg, border-top */
+.copilotKitInputContainer {
+  background: #ffffff !important;
+  border-top: 1px solid #E0E0E6 !important;
+}
+
+/* Pill-shaped textarea */
+.copilotKitPopup textarea,
+.copilotKitSidebar textarea {
+  border-radius: 9999px !important;
+  background: #F4F4F7 !important;
+  border: 1px solid #E0E0E6 !important;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}
+
+/* Custom scrollbar: 4px, transparent track */
+.copilotKitPopup ::-webkit-scrollbar,
+.copilotKitSidebar ::-webkit-scrollbar {
+  width: 4px;
+}
+.copilotKitPopup ::-webkit-scrollbar-track,
+.copilotKitSidebar ::-webkit-scrollbar-track {
+  background: transparent;
+}
+.copilotKitPopup ::-webkit-scrollbar-thumb,
+.copilotKitSidebar ::-webkit-scrollbar-thumb {
+  background: #E0E0E6;
+  border-radius: 10px;
+}

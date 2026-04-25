@@ -5,19 +5,19 @@ export async function POST(req: NextRequest) {
   const user_message = `send my profile to ${email}, include a note ''`;
 
   try {
-    const res = await fetch("https://n8n.krishb.in/webhook/" + process.env.EMAIL_WF_WEBHOOK_ID, {
-      method: "POST",
-      headers: {
-        "Accept": "*/*",
-        "API_KEY": process.env.EMAIL_WF_API_KEY || "",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ user_message }),
-    });
+    // const res = await fetch("https://n8n.krishb.in/webhook/" + process.env.EMAIL_WF_WEBHOOK_ID, {
+    //   method: "POST",
+    //   headers: {
+    //     "Accept": "*/*",
+    //     "API_KEY": process.env.EMAIL_WF_API_KEY || "",
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify({ user_message }),
+    // });
 
-    if (!res.ok) {
-      return NextResponse.json({ error: "Failed to send" }, { status: 500 });
-    }
+    // if (!res.ok) {
+    //   return NextResponse.json({ error: "Failed to send" }, { status: 500 });
+    // }
 
     return NextResponse.json({ status: "success" });
   } catch (error) {

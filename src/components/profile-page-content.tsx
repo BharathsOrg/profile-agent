@@ -498,7 +498,7 @@ export function ProfilePageContent({
               >
                 <ProjectItem
                   title="Profile Agent"
-                  description="AI assistant showcasing my background, built with Google ADK and CopilotKit."
+                  description="AI assistant showcasing my background, built with Google ADK and CopilotKit. Offers chat and voice interfaces"
                   githubUrl="https://github.com/bharath-krishna/profile_agent"
                   liveUrl="https://profile.krishb.in"
                 />

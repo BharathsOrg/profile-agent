@@ -16,7 +16,7 @@ data:
   # MODEL_NAME: "gemini-2.5-flash"
   USE_LITELLM: "true"
   MODEL_NAME: "openai/vllm/gemma4-26b-uncensored"
-  OPENAI_API_BASE: "https://dev.krishb.in/v1"
+  OPENAI_API_BASE: "https://gemma4.krishb.in/v1"
   OPENAI_API_KEY: "dummy"
   OPIK_URL_OVERRIDE: "https://opik.krishb.in/api"
   NOTES_DIR: /conversation_notes
